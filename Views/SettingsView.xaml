@@ -24,52 +24,61 @@
     </mah:MetroWindow.Resources>
 
     <Grid>
-        <!--Regex -->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical" >
+            <ComboBox ItemsSource="{Binding AvailableSounds}"
+                      SelectedItem="{Binding SelectedSound}"
+                      Margin="10" />
 
-            <Label Content="Regex:"
-                   VerticalAlignment="Center"
-                   Grid.Column="0" />
+            <!--Regex -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <TextBox Text="{Binding RegexPattern1}"
-                     VerticalAlignment="Center"
-                     Margin="5,0,0,0"
-                     Grid.Column="1" />
+                <Label Content="Regex:"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" />
 
-            <Button Content="📋"
-                    Width="30"
-                    Margin="5,0,0,0"
-                    Command="{Binding CopyRegex1Command}"
-                    Grid.Column="2" />
-        </Grid>
+                <TextBox Text="{Binding RegexPattern1}"
+                         VerticalAlignment="Center"
+                         Margin="5,0,0,0"
+                         Grid.Column="1" />
 
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
+                <Button Content="📋"
+                        Width="30"
+                        Margin="5,0,0,0"
+                        Command="{Binding CopyRegex1Command}"
+                        Grid.Column="2" />
+            </Grid>
 
-            <Label Content="Regex:"
-                   VerticalAlignment="Center"
-                   Grid.Column="0" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <TextBox Text="{Binding RegexPattern2}"
-                     VerticalAlignment="Center"
-                     Margin="5,0,0,0"
-                     Grid.Column="1" />
+                <Label Content="Regex:"
+                       VerticalAlignment="Center"
+                       Grid.Column="0" />
+
+                <TextBox Text="{Binding RegexPattern2}"
+                         VerticalAlignment="Center"
+                         Margin="5,0,0,0"
+                         Grid.Column="1" />
 
 
-            <Button Content="📋"
-                    Width="30"
-                    Margin="5,0,0,0"
-                    Command="{Binding CopyRegex2Command}"
-                    Grid.Column="2" />
-        </Grid>
+                <Button Content="📋"
+                        Width="30"
+                        Margin="5,0,0,0"
+                        Command="{Binding CopyRegex2Command}"
+                        Grid.Column="2" />
+            </Grid>
+
+        </StackPanel>
+        
+
     </Grid>
 </mah:MetroWindow>

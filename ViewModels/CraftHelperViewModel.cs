@@ -114,8 +114,6 @@ namespace POECraftHelper.ViewModels
       }
       catch (OperationCanceledException)
       {
-        m_soundPlayerService.PlaySoud ();
-
         m_loggingService.Log ($"Operation was cancelled by the user.");
       }
       catch (Exception ex)
