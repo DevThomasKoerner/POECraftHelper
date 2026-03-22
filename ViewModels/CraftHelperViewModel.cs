@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using POECraftHelper.Core;
+using POECraftHelper.Models;
 using POECraftHelper.Services;
 
 namespace POECraftHelper.ViewModels
@@ -22,11 +23,15 @@ namespace POECraftHelper.ViewModels
 
     private readonly ISoundPlayerService m_soundPlayerService;
 
+    private readonly ISettingsService m_settingsService;
+
     #endregion
 
     #region Private Fields
 
     private CancellationTokenSource m_cancellationTokenSource;
+
+    private CraftHelperSettings m_currentSettings;
 
     #endregion
 
@@ -73,24 +78,26 @@ namespace POECraftHelper.ViewModels
 
     #region CanProperties
 
-    public Boolean CanStartStop => true;
+    public Boolean CanStartStop => (m_windowService.IsSettingsOpen () == false);
 
-    public Boolean CanSettings => (IsRunning == false) && (m_windowService.IsOpen () == false);
+    public Boolean CanSettings => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
 
     #endregion
 
 
     public CraftHelperViewModel (ICraftDetectionService x_craftDetectionService, 
-      IWindowService x_windowService, 
-      ILoggingService x_loggingService,
-      ISoundPlayerService x_soundPlayerService)
+                                 IWindowService x_windowService, 
+                                 ILoggingService x_loggingService,
+                                 ISoundPlayerService x_soundPlayerService,
+                                 ISettingsService x_settingsService)
     {
       m_craftDetectionService = x_craftDetectionService;
       m_windowService = x_windowService;
       m_loggingService = x_loggingService;
       m_soundPlayerService = x_soundPlayerService;
+      m_settingsService = x_settingsService;
 
-      m_windowService.WindowClosed += OnSettingsClosed;
+      m_windowService.SettingWindowClosed += OnSettingsClosed;
 
       StartStopCommand = new RelayCommand (OnStartStop);
       SettingsCommand = new RelayCommand<Window> (OnSettings);
@@ -110,7 +117,11 @@ namespace POECraftHelper.ViewModels
 
         m_cancellationTokenSource = new CancellationTokenSource ();
 
-        await Task.Run (() => StartAsync (m_cancellationTokenSource.Token));
+        var craftDetectionProgress = new Progress<CraftDetectionProgress> (OnProgressChanged);
+
+        m_currentSettings = m_settingsService.LoadSettings ();
+
+        await Task.Run (() => StartAsync (m_cancellationTokenSource.Token, craftDetectionProgress));
       }
       catch (OperationCanceledException)
       {
@@ -126,24 +137,38 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private async Task StartAsync (CancellationToken cancellationToken)
+    private async Task StartAsync (CancellationToken cancellationToken, IProgress<CraftDetectionProgress> x_progressReporter)
     {
       while (cancellationToken.IsCancellationRequested == false)
       {
-        await Task.Delay (5000, cancellationToken);
+        await Task.Delay (2000, cancellationToken);
+        x_progressReporter.Report (new CraftDetectionProgress (true));
+        break;
+      }
+    }
 
+    private void OnProgressChanged (CraftDetectionProgress x_progress)
+    {
+      if (x_progress.RegexHit == true)
+      {
+        m_windowService.ShowOverlay ();
+
+        m_soundPlayerService.PlaySound (m_currentSettings.SoundType);
+
+        m_loggingService.Log ("Regex hit.");
       }
     }
 
     private void OnSettings (Window x_window)
     {
-      if (m_windowService.IsOpen () == true)
+      if (m_windowService.IsSettingsOpen () == true)
         return;
 
       m_windowService.ShowSettings (x_window);
 
       // GUI aktualisieren.
       OnPropertyChanged (nameof (CanSettings));
+      OnPropertyChanged (nameof (CanStartStop));
     }
 
     private void OnSettingsClosed (Object sender, EventArgs e)

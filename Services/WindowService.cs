@@ -15,9 +15,14 @@ namespace POECraftHelper.Services
   public interface IWindowService
   {
     void ShowSettings (Window owner);
-    Boolean IsOpen ();
 
-    event EventHandler WindowClosed;
+    void ShowOverlay ();
+
+    void CloseOverlayWindow (OverlayViewModel viewModel);
+
+    Boolean IsSettingsOpen ();
+
+    event EventHandler SettingWindowClosed;
   }
 
   public class WindowService : IWindowService
@@ -26,7 +31,7 @@ namespace POECraftHelper.Services
 
     private SettingsView m_settingsWindow;
 
-    public event EventHandler WindowClosed;
+    public event EventHandler SettingWindowClosed;
 
     public WindowService (IServiceProvider x_serviceProvider)
     {
@@ -57,9 +62,32 @@ namespace POECraftHelper.Services
       view.Show ();
     }
 
+    public void ShowOverlay ()
+    {
+      var viewModel = m_serviceProvider.GetRequiredService<OverlayViewModel> ();
+      var view = m_serviceProvider.GetRequiredService<OverlayView> ();
 
+      view.DataContext = viewModel;
 
-    public Boolean IsOpen ()
+      viewModel.RequestClose += () => view.Close ();
+
+      view.Show ();
+    }
+
+    public void CloseOverlayWindow (OverlayViewModel viewModel)
+    {
+      // Alle offenen Fenster durchgehen und dasjenige schließen, das den übergebenen ViewModel als DataContext hat.
+      foreach (Window window in Application.Current.Windows)
+      {
+        if (window.DataContext == viewModel)
+        {
+          window.Close ();
+          break;
+        }
+      }
+    }
+
+    public Boolean IsSettingsOpen ()
     {
       return m_settingsWindow != null;
     }
@@ -72,7 +100,7 @@ namespace POECraftHelper.Services
         m_settingsWindow = null;
       }
 
-      WindowClosed?.Invoke (this, EventArgs.Empty);
+      SettingWindowClosed?.Invoke (this, EventArgs.Empty);
     }
   }
 }

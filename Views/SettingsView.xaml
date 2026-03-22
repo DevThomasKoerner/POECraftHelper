@@ -25,6 +25,9 @@
 
     <Grid>
         <StackPanel Orientation="Vertical" >
+      
+
+
             <ComboBox ItemsSource="{Binding AvailableSounds}"
                       SelectedItem="{Binding SelectedSound}"
                       Margin="10" />

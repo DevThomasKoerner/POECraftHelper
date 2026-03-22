@@ -20,14 +20,17 @@ namespace POECraftHelper.Core
       services.AddSingleton<ILoggingService, LoggingService> ();
       services.AddSingleton<IWindowService, WindowService> ();
       services.AddSingleton<ISoundPlayerService, SoundPlayerService> ();
+      services.AddSingleton<ISettingsService, SettingsService> ();
 
       // ViewModels
       services.AddSingleton<ViewModels.CraftHelperViewModel> ();
       services.AddTransient<ViewModels.SettingsViewModel> ();
+      services.AddTransient<ViewModels.OverlayViewModel> ();
 
       // Views
       services.AddSingleton<Views.CraftHelperView> ();
       services.AddTransient<Views.SettingsView> ();
+      services.AddTransient<Views.OverlayView> ();
 
       return services.BuildServiceProvider ();
     }
