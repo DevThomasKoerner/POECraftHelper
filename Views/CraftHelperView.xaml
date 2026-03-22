@@ -9,6 +9,8 @@
                  mc:Ignorable="d"
                  WindowStyle="None"
                  AllowsTransparency="True"
+                 Background="Transparent"
+                 Topmost="True"
                  Height="450"
                  Width="800">
 
@@ -23,8 +25,45 @@
     </mah:MetroWindow.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="5" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="20" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="20" />
+            </Grid.ColumnDefinitions>
+            <!-- Rectangles -->
+            <Rectangle Fill="Black"
+                       Grid.Column="0"
+                       Grid.RowSpan="3" />
+            <Rectangle Fill="Black"
+                       Grid.Column="2"
+                       Grid.RowSpan="3" />
+            <Rectangle Fill="Black"
+                       Grid.Column="1"
+                       Grid.Row="0" />
+            <Rectangle Fill="Black"
+                       Grid.Column="1"
+                       Grid.Row="2" />
+            <Rectangle x:Name="workingRectangle"
+                       Fill="Transparent"
+                       Stroke="White"
+                       Grid.Column="1"
+                       Grid.Row="1" />
+        </Grid>
+
+
+        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <!--Settings button-->
             <Button HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
@@ -34,7 +73,8 @@
                     IsEnabled="{Binding CanSettings}"
                     Width="44"
                     Height="44"
-                    Margin="0,0,0,10">
+                    Margin="0,0,0,10"
+                    Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
 
                 <iconPacks:PackIconMaterial Kind="Cog"
                                             Width="20"
@@ -50,6 +90,8 @@
                 <Button.Style>
                     <Style TargetType="Button"
                            BasedOn="{StaticResource MahApps.Styles.Button.Circle}">
+                        <Setter Property="Background"
+                                Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding IsRunning}"
                                          Value="True">
