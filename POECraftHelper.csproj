@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Nullable>disable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<ApplicationDefinition Include="Core\App.xaml" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Folder Include="Models\" />
+		<Folder Include="Factories\" />
+		<Folder Include="Sounds\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Emgu.CV" Version="4.12.0.5764" />
+		<PackageReference Include="Emgu.CV.Bitmap" Version="4.12.0.5764" />
+		<PackageReference Include="Emgu.CV.runtime.windows" Version="4.12.0.5764" />
+		<PackageReference Include="MahApps.Metro" Version="2.4.11" />
+		<PackageReference Include="MahApps.Metro.IconPacks" Version="6.2.1" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.5" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Sounds\AlertSound0.wav">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Sounds\Chaos.wav">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Sounds\Divine.wav">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="Sounds\Exalt.wav">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+</Project>

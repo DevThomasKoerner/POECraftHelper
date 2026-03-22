@@ -1,0 +1,75 @@
+﻿<mah:MetroWindow x:Class="POECraftHelper.Views.SettingsView"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:local="clr-namespace:POECraftHelper.Views"
+                 mc:Ignorable="d"
+                 WindowStartupLocation="Manual"
+                 WindowTitleBrush="#FF2C2C2C"
+                 TitleCharacterCasing="Normal"
+                 Title="POE Craft Helper"
+                 Height="450"
+                 Width="800">
+    
+    <mah:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </mah:MetroWindow.Resources>
+
+    <Grid>
+        <!--Regex -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Regex:"
+                   VerticalAlignment="Center"
+                   Grid.Column="0" />
+
+            <TextBox Text="{Binding RegexPattern1}"
+                     VerticalAlignment="Center"
+                     Margin="5,0,0,0"
+                     Grid.Column="1" />
+
+            <Button Content="📋"
+                    Width="30"
+                    Margin="5,0,0,0"
+                    Command="{Binding CopyRegex1Command}"
+                    Grid.Column="2" />
+        </Grid>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Regex:"
+                   VerticalAlignment="Center"
+                   Grid.Column="0" />
+
+            <TextBox Text="{Binding RegexPattern2}"
+                     VerticalAlignment="Center"
+                     Margin="5,0,0,0"
+                     Grid.Column="1" />
+
+
+            <Button Content="📋"
+                    Width="30"
+                    Margin="5,0,0,0"
+                    Command="{Binding CopyRegex2Command}"
+                    Grid.Column="2" />
+        </Grid>
+    </Grid>
+</mah:MetroWindow>
