@@ -14,7 +14,7 @@ namespace POECraftHelper.Services
     /// Nimmt einen Screenshot in der angegebenen Region auf und gibt ihn als Bitmap zurück.
     /// </summary>
     /// <returns>Ein Bitmap-Objekt, das den Screenshot enthält.</returns>
-    System.Drawing.Bitmap CaptureScreenshot (System.Drawing.Rectangle rect);
+    System.Drawing.Bitmap CaptureScreenshot (Rectangle rect);
   }
 
   internal class ScreenshotCaptureService : IScreenshotCaptureService

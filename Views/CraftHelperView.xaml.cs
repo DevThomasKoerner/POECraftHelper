@@ -23,9 +23,8 @@ namespace POECraftHelper.Views
   {
     public CraftHelperView (CraftHelperViewModel x_viewModel)
     {
-      InitializeComponent ();
-
       DataContext = x_viewModel;
+      InitializeComponent ();
     }
   }
 }

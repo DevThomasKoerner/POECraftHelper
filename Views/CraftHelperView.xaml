@@ -10,12 +10,18 @@
                  WindowStyle="None"
                  AllowsTransparency="True"
                  Background="Transparent"
+                 BorderThickness="0"
                  Topmost="True"
-                 Height="450"
-                 Width="800">
+                 Height="{Binding WindowHeight, Mode=TwoWay}"
+                 Width="{Binding WindowWidth, Mode=TwoWay}"
+                 Left="{Binding WindowLeft, Mode=TwoWay}"
+                 Top="{Binding WindowTop, Mode=TwoWay}">
 
     <mah:MetroWindow.Resources>
         <ResourceDictionary>
+            <SolidColorBrush x:Key="BackgroundBrush"
+                             Color="#CC000000" />
+            
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -43,16 +49,16 @@
                 <ColumnDefinition Width="20" />
             </Grid.ColumnDefinitions>
             <!-- Rectangles -->
-            <Rectangle Fill="Black"
+            <Rectangle Fill="{StaticResource BackgroundBrush}"
                        Grid.Column="0"
                        Grid.RowSpan="3" />
-            <Rectangle Fill="Black"
+            <Rectangle Fill="{StaticResource BackgroundBrush}"
                        Grid.Column="2"
                        Grid.RowSpan="3" />
-            <Rectangle Fill="Black"
+            <Rectangle Fill="{StaticResource BackgroundBrush}"
                        Grid.Column="1"
                        Grid.Row="0" />
-            <Rectangle Fill="Black"
+            <Rectangle Fill="{StaticResource BackgroundBrush}"
                        Grid.Column="1"
                        Grid.Row="2" />
             <Rectangle x:Name="workingRectangle"
@@ -63,7 +69,10 @@
         </Grid>
 
 
-        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+        <StackPanel Grid.Column="1"
+                    Orientation="Vertical"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom">
             <!--Settings button-->
             <Button HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
@@ -78,7 +87,7 @@
 
                 <iconPacks:PackIconMaterial Kind="Cog"
                                             Width="20"
-                                            Height="20"/>
+                                            Height="20" />
             </Button>
 
             <!--Start button-->
@@ -102,12 +111,6 @@
                     </Style>
                 </Button.Style>
             </Button>
-
-
-
         </StackPanel>
-        
-       
-
     </Grid>
 </mah:MetroWindow>

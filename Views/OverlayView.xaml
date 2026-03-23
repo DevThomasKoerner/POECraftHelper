@@ -8,8 +8,16 @@
                  xmlns:local="clr-namespace:POECraftHelper.Views"
                  mc:Ignorable="d"
                  WindowStyle="None"
-                 Height="450"
-                 Width="800">
+                 AllowsTransparency="True"
+                 Background="Transparent"
+                 ShowTitleBar="False"
+                 ShowCloseButton="False"
+                 ShowMaxRestoreButton="False"
+                 ShowMinButton="False"
+                 Topmost="true"
+                 ShowInTaskbar="false"
+                 ResizeMode="NoResize"
+                 WindowStartupLocation="Manual">
 
     <mah:MetroWindow.Resources>
         <ResourceDictionary>
@@ -20,20 +28,33 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </mah:MetroWindow.Resources>
-    
-    <Grid Background="Black" Opacity="60">
-        
-        <StackPanel Orientation="Vertical"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
-            <Label Content="Regex hit!"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center"
-                   FontSize="12" 
-                   Margin="10"/>
 
-            <Button Content="Okay"
-                    Command="{Binding OkayCommand}"/>
-        </StackPanel>
+    <Grid>
+        <Grid.Background>
+            <SolidColorBrush Color="#E6000000" />
+        </Grid.Background>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0"
+               Content="Regex hit!"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"
+               FontSize="16"
+               Margin="10" />
+
+        <Button Grid.Row="1"
+                Style="{StaticResource MahApps.Styles.Button.Circle}"
+                Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+                Margin="10"
+                Content="Okay"
+                Height="44"
+                Width="44"
+                Command="{Binding OkayCommand}" />
+
+
     </Grid>
 </mah:MetroWindow>

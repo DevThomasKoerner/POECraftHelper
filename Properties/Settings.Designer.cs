@@ -94,5 +94,29 @@ namespace POECraftHelper.Properties {
                 this["RegexPatternsJson"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double SettingsWindowHeight {
+            get {
+                return ((double)(this["SettingsWindowHeight"]));
+            }
+            set {
+                this["SettingsWindowHeight"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        public double SettingsWindowWidth {
+            get {
+                return ((double)(this["SettingsWindowWidth"]));
+            }
+            set {
+                this["SettingsWindowWidth"] = value;
+            }
+        }
     }
 }

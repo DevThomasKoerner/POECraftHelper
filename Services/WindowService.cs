@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Media.Media3D;
 using Microsoft.Extensions.DependencyInjection;
+using POECraftHelper.Models;
 using POECraftHelper.ViewModels;
 using POECraftHelper.Views;
 
@@ -14,77 +16,102 @@ namespace POECraftHelper.Services
 
   public interface IWindowService
   {
-    void ShowSettings (Window owner);
+    void Initialize ();
 
-    void ShowOverlay ();
+    void ShowSettings (Window x_owner);
 
-    void CloseOverlayWindow (OverlayViewModel viewModel);
+    void CloseSettings ();
 
     Boolean IsSettingsOpen ();
 
     event EventHandler SettingWindowClosed;
+
+
+    void ShowOverlay (Rect x_bounds);
+
+
   }
 
   public class WindowService : IWindowService
   {
     private readonly IServiceProvider m_serviceProvider;
 
+    private readonly ISettingsService m_settingsService;
+
     private SettingsView m_settingsWindow;
+
+    private OverlayView m_overlayView;
 
     public event EventHandler SettingWindowClosed;
 
-    public WindowService (IServiceProvider x_serviceProvider)
+    public WindowService (IServiceProvider x_serviceProvider, ISettingsService x_settingsService)
     {
       m_serviceProvider = x_serviceProvider;
+      m_settingsService = x_settingsService;
     }
 
-    public void ShowSettings (Window owner)
+    public void Initialize ()
+    {
+      if (m_overlayView != null)
+        return;
+
+      var overlayViewModel = m_serviceProvider.GetRequiredService<OverlayViewModel> ();
+      var overlayView = m_serviceProvider.GetRequiredService<OverlayView> ();
+
+      overlayView.DataContext = overlayViewModel;
+      overlayView.Visibility = Visibility.Hidden;
+
+      overlayViewModel.RequestClose += () =>
+      {
+        m_overlayView.Hide ();
+      };
+
+      m_overlayView = overlayView;
+
+      m_overlayView.Show ();
+      m_overlayView.Hide ();
+    }
+
+    public void ShowSettings (Window x_owner)
     {
       if (m_settingsWindow != null)
         return;
+
+      var windowSettings = m_settingsService.LoadSettings<WindowSettings> ();
 
       var view = m_serviceProvider.GetRequiredService<SettingsView>();
       var viewModel = m_serviceProvider.GetRequiredService<SettingsViewModel>();
 
       view.DataContext = viewModel;
-      view.Owner = owner;
+      view.Owner = x_owner;
 
       // Position rechts daneben
       view.WindowStartupLocation = WindowStartupLocation.Manual;
-      view.Left = owner.Left + owner.Width;
-      view.Top = owner.Top;
+      viewModel.WindowLeft = x_owner.Left + x_owner.Width;
+      viewModel.WindowTop = x_owner.Top;
+      viewModel.WindowHeight = windowSettings.SettingsWindowHeight;
+      viewModel.WindowWidth = windowSettings.SettingsWindowWidth;
 
       // Referenz speichern, damit das Fenster nicht erneut geöffnet wird, wenn es bereits offen ist.
       m_settingsWindow = view;
 
-      view.Closed += OnSettingsClosed;
-
       view.Show ();
     }
 
-    public void ShowOverlay ()
+    public void ShowOverlay (Rect x_bounds)
     {
-      var viewModel = m_serviceProvider.GetRequiredService<OverlayViewModel> ();
-      var view = m_serviceProvider.GetRequiredService<OverlayView> ();
+      if (m_overlayView == null)
+        return;
 
-      view.DataContext = viewModel;
+      m_overlayView.Left = x_bounds.Left;
+      m_overlayView.Top = x_bounds.Top;
+      m_overlayView.Width = x_bounds.Width;
+      m_overlayView.Height = x_bounds.Height;
 
-      viewModel.RequestClose += () => view.Close ();
+      if (m_overlayView.IsVisible == false)
+        m_overlayView.Show ();
 
-      view.Show ();
-    }
-
-    public void CloseOverlayWindow (OverlayViewModel viewModel)
-    {
-      // Alle offenen Fenster durchgehen und dasjenige schließen, das den übergebenen ViewModel als DataContext hat.
-      foreach (Window window in Application.Current.Windows)
-      {
-        if (window.DataContext == viewModel)
-        {
-          window.Close ();
-          break;
-        }
-      }
+      m_overlayView.Activate ();
     }
 
     public Boolean IsSettingsOpen ()
@@ -92,11 +119,11 @@ namespace POECraftHelper.Services
       return m_settingsWindow != null;
     }
 
-    private void OnSettingsClosed (object sender, EventArgs e)
+    public void CloseSettings ()
     {
       if (m_settingsWindow != null)
       {
-        m_settingsWindow.Closed -= OnSettingsClosed;
+        m_settingsWindow.Close ();
         m_settingsWindow = null;
       }
 

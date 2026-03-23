@@ -21,8 +21,6 @@ namespace POECraftHelper.Views
     public SettingsView ()
     {
       InitializeComponent ();
-
-      //DataContext = x_viewModel;
     }
   }
 }

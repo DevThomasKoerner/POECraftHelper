@@ -16,7 +16,7 @@ namespace POECraftHelper.Core
 
       // Services
       services.AddSingleton<IScreenshotCaptureService, ScreenshotCaptureService> ();
-      services.AddSingleton<ICraftDetectionService, CraftDetectionService> ();
+      services.AddSingleton<IRegexDetectionService, RegexDetectionService> ();
       services.AddSingleton<ILoggingService, LoggingService> ();
       services.AddSingleton<IWindowService, WindowService> ();
       services.AddSingleton<ISoundPlayerService, SoundPlayerService> ();

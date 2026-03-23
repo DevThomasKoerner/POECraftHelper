@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using POECraftHelper.Interfaces;
 using POECraftHelper.Models;
+using POECraftHelper.Properties;
 
 namespace POECraftHelper.Services
 {
   public interface ISettingsService
   {
-    CraftHelperSettings LoadSettings ();
-
-    void SaveSettings (CraftHelperSettings x_appSettings);
+    T LoadSettings<T> () where T : ISettings, new();
+    void SaveSettings<T> (T x_settings) where T : ISettings;
   }
 
   public class SettingsService : ISettingsService
@@ -23,68 +24,17 @@ namespace POECraftHelper.Services
       m_loggingService = x_loggingService;
     }
 
-    public CraftHelperSettings LoadSettings ()
+    public T LoadSettings<T> () where T : ISettings, new()
     {
-      var settings = new CraftHelperSettings ();
-
-      settings.SoundEnabled = Properties.Settings.Default.SoundEnabled;
-      settings.SoundVolume = Properties.Settings.Default.SoundVolume;
-      settings.SoundType = (SoundType)Properties.Settings.Default.SoundType;
-      settings.WindowLeft = Properties.Settings.Default.WindowLeft;
-      settings.WindowTop = Properties.Settings.Default.WindowTop;
-      settings.RegexPatterns = RegexPatternsFromJson (Properties.Settings.Default.RegexPatternsJson);
-
+      var settings = new T();
+      settings.Load ();
       return settings;
     }
 
-    public void SaveSettings (CraftHelperSettings x_craftHelperSettings)
+    public void SaveSettings<T> (T x_settings) where T : ISettings
     {
-      Properties.Settings.Default.SoundEnabled = x_craftHelperSettings.SoundEnabled;
-      Properties.Settings.Default.SoundVolume = x_craftHelperSettings.SoundVolume;
-      Properties.Settings.Default.SoundType = (Int32)x_craftHelperSettings.SoundType;
-      Properties.Settings.Default.WindowLeft = x_craftHelperSettings.WindowLeft;
-      Properties.Settings.Default.WindowTop = x_craftHelperSettings.WindowTop;
-      Properties.Settings.Default.RegexPatternsJson = RegexPatternsToJson (x_craftHelperSettings.RegexPatterns);
-
+      x_settings.Save ();
       Properties.Settings.Default.Save ();
-    }
-
-    private Dictionary<String, String> RegexPatternsFromJson (String x_json)
-    {
-      var regexPatterns = new Dictionary<String, String> ();
-
-      if (String.IsNullOrEmpty (x_json))
-        return regexPatterns;
-
-      try
-      {
-        var jsonObject = Newtonsoft.Json.Linq.JObject.Parse (x_json);
-        foreach (var property in jsonObject.Properties ())
-        {
-          regexPatterns[property.Name] = property.Value.ToString ();
-        }
-      }
-      catch (Exception ex)
-      {
-        m_loggingService.Log ($"Error parsing regex patterns from JSON: {ex.Message}");
-      }
-
-      return regexPatterns;
-    }
-
-    private String RegexPatternsToJson (Dictionary<String, String> x_regexPatterns)
-    {
-      if (String.IsNullOrEmpty (x_regexPatterns?.ToString ()))
-        return String.Empty;
-
-      var jsonObject = new Newtonsoft.Json.Linq.JObject ();
-
-      foreach (var kvp in x_regexPatterns)
-      {
-        jsonObject[kvp.Key] = kvp.Value;
-      }
-
-      return jsonObject.ToString ();
     }
   }
 }

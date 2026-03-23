@@ -6,82 +6,82 @@
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:local="clr-namespace:POECraftHelper.Views"
                  mc:Ignorable="d"
+                 WindowStyle="None"
                  WindowStartupLocation="Manual"
                  WindowTitleBrush="#FF2C2C2C"
                  TitleCharacterCasing="Normal"
-                 Title="POE Craft Helper"
-                 Height="450"
-                 Width="800">
-    
-    <mah:MetroWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </mah:MetroWindow.Resources>
+                 Title="Settings"
+                 ShowCloseButton="False"
+                 ShowMaxRestoreButton="False"
+                 ShowMinButton="False"
+                 ShowInTaskbar="false"
+                 ResizeMode="CanResize"
+                 BorderThickness="0"
+                 Height="{Binding WindowHeight, Mode=TwoWay}"
+                 Width="{Binding WindowWidth, Mode=TwoWay}"
+                 Left="{Binding WindowLeft, Mode=TwoWay}"
+                 Top="{Binding WindowTop, Mode=TwoWay}">
 
-    <Grid>
-        <StackPanel Orientation="Vertical" >
-      
+  <mah:MetroWindow.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </mah:MetroWindow.Resources>
 
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
 
-            <ComboBox ItemsSource="{Binding AvailableSounds}"
-                      SelectedItem="{Binding SelectedSound}"
-                      Margin="10" />
+    <Grid Grid.Row="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-            <!--Regex -->
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+      <CheckBox Grid.Row="0"
+                HorizontalAlignment="Left"
+                Content="Enable Sound"
+                IsChecked="{Binding SoundEnabled}"
+                Margin="10" />
 
-                <Label Content="Regex:"
-                       VerticalAlignment="Center"
-                       Grid.Column="0" />
+      <Slider Grid.Row="1"
+              Margin="10"
+              HorizontalAlignment="Left"
+              Minimum="0"
+              Maximum="100"
+              Value="50"
+              TickFrequency="0.1"
+              IsSnapToTickEnabled="True"
+              Width="200" />
 
-                <TextBox Text="{Binding RegexPattern1}"
-                         VerticalAlignment="Center"
-                         Margin="5,0,0,0"
-                         Grid.Column="1" />
-
-                <Button Content="📋"
-                        Width="30"
-                        Margin="5,0,0,0"
-                        Command="{Binding CopyRegex1Command}"
-                        Grid.Column="2" />
-            </Grid>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <Label Content="Regex:"
-                       VerticalAlignment="Center"
-                       Grid.Column="0" />
-
-                <TextBox Text="{Binding RegexPattern2}"
-                         VerticalAlignment="Center"
-                         Margin="5,0,0,0"
-                         Grid.Column="1" />
+      <ComboBox Grid.Row="2"
+                ItemsSource="{Binding AvailableSounds}"
+                SelectedItem="{Binding SelectedSound}"
+                Margin="10" />
 
 
-                <Button Content="📋"
-                        Width="30"
-                        Margin="5,0,0,0"
-                        Command="{Binding CopyRegex2Command}"
-                        Grid.Column="2" />
-            </Grid>
 
-        </StackPanel>
-        
 
     </Grid>
+
+    <Button Grid.Row="2"
+            Margin="10"
+            Content="Save"
+            Style="{StaticResource MahApps.Styles.Button.Circle}"
+            Command="{Binding SaveCommand}"
+            Width="44"
+            Height="44" />
+
+    
+
+
+  </Grid>
 </mah:MetroWindow>
