@@ -201,7 +201,8 @@ namespace POECraftHelper.ViewModels
       {
         m_windowService.ShowOverlay (new Rect (WindowLeft, WindowTop, WindowWidth, WindowHeight));
 
-        m_soundPlayerService.PlaySound (m_currentSettings.SoundType);
+        if (m_currentSettings.SoundEnabled == true)
+          m_soundPlayerService.PlaySound (m_currentSettings.SoundType, m_currentSettings.SoundVolume);
 
         m_loggingService.Log ("Regex hit.");
       }

@@ -5,6 +5,7 @@ using System.Media;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using NAudio.Wave;
 using POECraftHelper.Models;
 
 namespace POECraftHelper.Services
@@ -12,33 +13,35 @@ namespace POECraftHelper.Services
 
   public interface ISoundPlayerService
   {
-    void PlaySound (SoundType x_soundType);
+    void PlaySound (SoundType x_soundType, Double x_volume);
   }
 
   public class SoundPlayerService : ISoundPlayerService
   {
-    public void PlaySound (SoundType x_soundType)
+    public void PlaySound (SoundType x_soundType, Double x_volume)
     {
       var assemblyDirectory = System.IO.Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
 
-      SoundPlayer player = null;
-      switch (x_soundType)
+      String filePath = x_soundType switch
       {
-        case SoundType.Divine:
-          player = new SoundPlayer (System.IO.Path.Combine (assemblyDirectory, "Sounds", $"{SoundType.Divine.ToString ()}.wav"));
-          break;
-        case SoundType.Chaos:
-          player = new SoundPlayer (System.IO.Path.Combine (assemblyDirectory, "Sounds", $"{SoundType.Chaos.ToString ()}.wav"));
-          break;
-        case SoundType.Exalt:
-          player = new SoundPlayer (System.IO.Path.Combine (assemblyDirectory, "Sounds", $"{SoundType.Exalt.ToString ()}.wav"));
-          break;
+        SoundType.Divine => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Divine.wav"),
+        SoundType.Chaos  => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Chaos.wav"),
+        SoundType.Exalt  => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Exalt.wav"),
+        _ => throw new ArgumentException($"Sound type {x_soundType} is not supported.")
+      };
 
-        default:
-          throw new ArgumentException ($"Sound type {x_soundType} is not supported.");
-      }
+      var audioFile = new AudioFileReader (filePath);
+      audioFile.Volume = Math.Clamp ((float)x_volume / 100f, 0f, 1f);
 
-      player.Play ();
+      var output = new WaveOutEvent();
+      output.Init (audioFile);
+      output.Play ();
+
+      output.PlaybackStopped += (s, e) =>
+      {
+        output.Dispose ();
+        audioFile.Dispose ();
+      };
     }
   }
 

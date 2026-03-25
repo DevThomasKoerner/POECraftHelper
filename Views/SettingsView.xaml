@@ -5,6 +5,8 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:local="clr-namespace:POECraftHelper.Views"
+                 xmlns:converters="clr-namespace:POECraftHelper.Converters"
+                 xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                  mc:Ignorable="d"
                  WindowStyle="None"
                  WindowStartupLocation="Manual"
@@ -20,7 +22,8 @@
                  Height="{Binding WindowHeight, Mode=TwoWay}"
                  Width="{Binding WindowWidth, Mode=TwoWay}"
                  Left="{Binding WindowLeft, Mode=TwoWay}"
-                 Top="{Binding WindowTop, Mode=TwoWay}">
+                 Top="{Binding WindowTop, Mode=TwoWay}"
+                 MinWidth="250">
 
   <mah:MetroWindow.Resources>
     <ResourceDictionary>
@@ -29,6 +32,8 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <converters:BoolToVisibilityConverter x:Key="_boolToVisibilityConverter" />
     </ResourceDictionary>
   </mah:MetroWindow.Resources>
 
@@ -44,33 +49,145 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
 
-      <CheckBox Grid.Row="0"
+      <!-- Section Header -->
+      <TextBlock Grid.Row="0"
+                 Text="Sound"
+                 FontSize="16"
+                 FontWeight="SemiBold"
+                 Margin="10" />
+
+      <CheckBox Grid.Row="1"
                 HorizontalAlignment="Left"
                 Content="Enable Sound"
                 IsChecked="{Binding SoundEnabled}"
-                Margin="10" />
+                Margin="20,0,0,0" />
 
-      <Slider Grid.Row="1"
-              Margin="10"
-              HorizontalAlignment="Left"
-              Minimum="0"
-              Maximum="100"
-              Value="50"
-              TickFrequency="0.1"
-              IsSnapToTickEnabled="True"
-              Width="200" />
+      <Grid Grid.Row="2"
+            Margin="20,5,0,0"
+            Width="200"
+            HorizontalAlignment="Left">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-      <ComboBox Grid.Row="2"
+        <TextBlock Text="{Binding ElementName=MySlider, Path=Value, StringFormat={}{0:0}%}"
+                   Margin="0,0,10,0"
+                   FontSize="12"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Left"
+                   Grid.Column="0"/>
+        <Slider x:Name="MySlider"
+                Minimum="0"
+                Maximum="100"
+                Value="{Binding SoundVolume}"
+                TickFrequency="0.1"
+                IsSnapToTickEnabled="True"
+                IsEnabled="{Binding CanChangeSoundVolume}"
+                Grid.Column="1">
+          <Slider.Style>
+            <Style TargetType="Slider"
+                   BasedOn="{StaticResource {x:Type Slider}}">
+              <Style.Triggers>
+                <Trigger Property="UIElement.IsEnabled"
+                         Value="False">
+                  <Setter Property="Opacity"
+                          Value="0.4" />
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+          </Slider.Style>
+          <i:Interaction.Triggers>
+            <i:EventTrigger EventName="PreviewMouseLeftButtonUp">
+              <i:InvokeCommandAction Command="{Binding SliderChangedCommand}"
+                                     CommandParameter="{Binding Value, RelativeSource={RelativeSource AncestorType=Slider}}" />
+            </i:EventTrigger>
+          </i:Interaction.Triggers>
+        </Slider>
+      </Grid>
+
+      <ComboBox Grid.Row="3"
                 ItemsSource="{Binding AvailableSounds}"
                 SelectedItem="{Binding SelectedSound}"
-                Margin="10" />
-
-
-
-
+                Margin="20,5,0,0"
+                Width="200"
+                HorizontalAlignment="Left"
+                IsEnabled="{Binding CanSelectSound}">
+        <ComboBox.Style>
+          <Style TargetType="ComboBox"
+                 BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Style.Triggers>
+              <Trigger Property="UIElement.IsEnabled"
+                       Value="False">
+                <Setter Property="Opacity"
+                        Value="0.4" />
+              </Trigger>
+            </Style.Triggers>
+          </Style>
+        </ComboBox.Style>
+      </ComboBox>
     </Grid>
+
+    <StackPanel Margin="20" Grid.Row="1">
+      <!-- Section Header -->
+      <TextBlock Text="Regex"
+                 FontSize="16"
+                 FontWeight="SemiBold"
+                 Margin="0,0,0,10" />
+      
+      <!-- Liste der Regex -->
+      <ItemsControl ItemsSource="{Binding RegexItems}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+
+            <StackPanel Margin="0,0,0,15">
+
+              <StackPanel Orientation="Horizontal"
+                          VerticalAlignment="Center">
+
+                <!-- Anzeige -->
+                <TextBlock Text="{Binding RegexName}"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"
+                           Visibility="{Binding IsEditingTitle, Converter={StaticResource _boolToVisibilityConverter}, ConverterParameter=False}" />
+
+                <!-- Edit -->
+                <TextBox Text="{Binding RegexName, UpdateSourceTrigger=PropertyChanged}"
+                         Width="200"
+                         BorderThickness="0"
+                         Background="Transparent"
+                         Visibility="{Binding IsEditingTitle, Converter={StaticResource _boolToVisibilityConverter}}" />
+
+                <!-- Edit Icon -->
+                <Button Content="✏"
+                        Width="20"
+                        Height="20"
+                        Margin="5,0,0,0"
+                        Command="{Binding ToggleEditTitleCommand}"
+                        ToolTip="Titel bearbeiten" />
+              </StackPanel>
+
+              <!-- Regex Eingabe -->
+              <TextBox Text="{Binding RegexPattern, UpdateSourceTrigger=PropertyChanged}"
+                       AcceptsReturn="False"
+                       Height="30"
+                       VerticalContentAlignment="Center" />
+
+            </StackPanel>
+
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <!-- Add Button -->
+      <Button Content="Add Regex"
+              Margin="0,10,0,0"
+              Command="{Binding AddRegexCommand}" />
+    </StackPanel>
+
 
     <Button Grid.Row="2"
             Margin="10"
@@ -80,7 +197,7 @@
             Width="44"
             Height="44" />
 
-    
+
 
 
   </Grid>

@@ -87,6 +87,8 @@ namespace POECraftHelper.ViewModels
         {
           m_soundEnabled = value;
           OnPropertyChanged (nameof (SoundEnabled));
+          OnPropertyChanged (nameof (CanChangeSoundVolume));
+          OnPropertyChanged (nameof (CanSelectSound));
         }
       }
     }
@@ -105,6 +107,18 @@ namespace POECraftHelper.ViewModels
       }
     }
 
+    private Boolean m_isEditingTitle;
+    public Boolean IsEditingTitle
+    {
+      get => m_isEditingTitle;
+      set
+      {
+        m_isEditingTitle = value;
+        OnPropertyChanged (nameof (IsEditingTitle));
+      }
+    }
+
+
     public ObservableCollection<SoundType> AvailableSounds { get; } = new ObservableCollection<SoundType> (Enum.GetValues<SoundType> ());
 
     private SoundType m_selectedSound;
@@ -117,7 +131,7 @@ namespace POECraftHelper.ViewModels
         {
           m_selectedSound = value;
           OnPropertyChanged (nameof (SelectedSound));
-          OnSoundChanged (m_selectedSound);
+          OnSoundChanged (SoundVolume);
         }
       }
     }
@@ -126,12 +140,21 @@ namespace POECraftHelper.ViewModels
 
     #endregion
 
+    #region Can Properties
+
+    public Boolean CanChangeSoundVolume => (SoundEnabled == true);
+
+    public Boolean CanSelectSound => (SoundEnabled == true);
+
+    #endregion
+
     #region Commands
 
     public ICommand AddRegexCommand { get; }
     public ICommand RemoveRegexCommand { get; }
-
     public ICommand SaveCommand { get; }
+    public ICommand ToggleEditTitleCommand { get; } 
+    public ICommand SliderChangedCommand { get; }
 
     #endregion
 
@@ -146,6 +169,8 @@ namespace POECraftHelper.ViewModels
       AddRegexCommand = new RelayCommand<RegexItem> (OnAddRegex);
       RemoveRegexCommand = new RelayCommand<RegexItem> (OnRemoveRegex);
       SaveCommand = new RelayCommand (OnSave);
+      ToggleEditTitleCommand = new RelayCommand (OnToggleEditTitle);
+      SliderChangedCommand = new RelayCommand<Double> (OnSoundChanged);
 
       Initialize ();
     }
@@ -164,15 +189,20 @@ namespace POECraftHelper.ViewModels
         RegexItems.Add (regexItem);
       }
 
+      // Falls keine Regex-Items vorhanden sind, dann ein Beispiel-Item hinzufügen, damit der Benutzer eine Vorlage hat.
+      if (RegexItems.Any () == false)
+      {
+        RegexItems.Add (new RegexItem ("Body Armour Regex", "\"^(Prime)\\sConquest Lamellar|^Conquest Lamellar\" \"Conquest Lamellar\\s|Conquest Lamellar$\""));
+      }
+
       OnPropertyChanged (nameof (SoundEnabled));
       OnPropertyChanged (nameof (SoundVolume));
       OnPropertyChanged (nameof (SelectedSound));
     }
 
-    private void OnSoundChanged (SoundType x_selectedSoundType)
+    private void OnSoundChanged (Double x_soundVolume)
     {
-      // Hier könnte die Logik implementiert werden, um den ausgewählten Sound zu speichern oder sofort abzuspielen.
-      m_soundPlayerService.PlaySound (x_selectedSoundType);
+      m_soundPlayerService.PlaySound (SelectedSound, x_soundVolume);
     }
 
     private void OnSave ()
@@ -190,6 +220,11 @@ namespace POECraftHelper.ViewModels
       m_settingsService.SaveSettings (windowSettings);
 
       m_windowService.CloseSettings ();
+    }
+
+    private void OnToggleEditTitle ()
+    {
+      IsEditingTitle = !IsEditingTitle;
     }
 
     private void OnAddRegex (RegexItem x_regexItem)
