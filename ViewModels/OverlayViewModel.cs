@@ -9,7 +9,7 @@ using POECraftHelper.Services;
 
 namespace POECraftHelper.ViewModels
 {
-  public class OverlayViewModel
+  public class OverlayViewModel : ObservableObject
   {
     #region Services 
 
@@ -20,6 +20,21 @@ namespace POECraftHelper.ViewModels
     #region Public Properties
 
     public event Action RequestClose;
+
+    #endregion
+
+    #region Binding Properties
+
+    private Boolean m_canOkay;
+    public Boolean CanOkay
+    {
+      get => m_canOkay;
+      set
+      {
+        m_canOkay = value;
+        OnPropertyChanged (nameof (CanOkay));
+      }
+    }
 
     #endregion
 

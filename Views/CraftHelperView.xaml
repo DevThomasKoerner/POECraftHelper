@@ -4,11 +4,16 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:local="clr-namespace:POECraftHelper.Views"
+                 xmlns:controls="clr-namespace:POECraftHelper.Controls"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  mc:Ignorable="d"
                  WindowStyle="None"
                  AllowsTransparency="True"
+                 ShowTitleBar="False"
+                 ShowCloseButton="False"
+                 ShowMinButton="False"
+                 ShowMaxRestoreButton="False"
                  Background="Transparent"
                  BorderThickness="0"
                  Topmost="True"
@@ -17,100 +22,176 @@
                  Left="{Binding WindowLeft, Mode=TwoWay}"
                  Top="{Binding WindowTop, Mode=TwoWay}">
 
-    <mah:MetroWindow.Resources>
-        <ResourceDictionary>
-            <SolidColorBrush x:Key="BackgroundBrush"
-                             Color="#CC000000" />
-            
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </mah:MetroWindow.Resources>
+  <mah:MetroWindow.Resources>
+    <ResourceDictionary>
+      <SolidColorBrush x:Key="BackgroundBrush"
+                       Color="#CC000000" />
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </mah:MetroWindow.Resources>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <StackPanel Grid.Column="0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom">
+      <Button Command="{Binding MinimizeCommand}"
+              IsEnabled="{Binding CanMinimize}"
+              ToolTip="Minimize"
+              Width="30"
+              Height="30"
+              BorderBrush="{DynamicResource MahApps.Brushes.Gray3}"
+              BorderThickness="2"
+              Grid.Column="0"
+              Margin="0,0,0,5">
+        <mah:FontIcon FontFamily="Segoe MDL2 Assets"
+                      Glyph="&#xE921;"
+                      Foreground="White"
+                      FontSize="15" />
+        <Button.Style>
+          <Style TargetType="Button"
+                 BasedOn="{StaticResource MahApps.Styles.Button}">
+            <Setter Property="Background"
+                    Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
+            <Style.Triggers>
+              <Trigger Property="IsEnabled"
+                       Value="False">
+                <Setter Property="Opacity"
+                        Value="0.3" />
+              </Trigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
+
+      <Button Command="{Binding ExitCommand}"
+              IsEnabled="{Binding CanExit}"
+              ToolTip="Exit"
+              Width="30"
+              Height="30"
+              BorderBrush="{DynamicResource MahApps.Brushes.Gray3}"
+              BorderThickness="2"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Bottom"
+              Margin="0,0,0,5">
+        <mah:FontIcon FontFamily="Segoe MDL2 Assets"
+                      Glyph="&#xE711;"
+                      Foreground="White"
+                      FontSize="15" />
+        <Button.Style>
+          <Style TargetType="Button"
+                 BasedOn="{StaticResource MahApps.Styles.Button}">
+            <Setter Property="Background"
+                    Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
+            <Style.Triggers>
+              <Trigger Property="IsEnabled"
+                       Value="False">
+                <Setter Property="Opacity"
+                        Value="0.3" />
+              </Trigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
+      
+      <controls:WindowDragControl HorizontalAlignment="Left"
+                                  VerticalAlignment="Bottom"
+                                  Panel.ZIndex="10"
+                                  Margin="2,0,0,10"
+                                  IsDragEnabled="{Binding CanDrag}"/>
+    </StackPanel>
 
 
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="5" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="20" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="20" />
-            </Grid.ColumnDefinitions>
-            <!-- Rectangles -->
-            <Rectangle Fill="{StaticResource BackgroundBrush}"
-                       Grid.Column="0"
-                       Grid.RowSpan="3" />
-            <Rectangle Fill="{StaticResource BackgroundBrush}"
-                       Grid.Column="2"
-                       Grid.RowSpan="3" />
-            <Rectangle Fill="{StaticResource BackgroundBrush}"
-                       Grid.Column="1"
-                       Grid.Row="0" />
-            <Rectangle Fill="{StaticResource BackgroundBrush}"
-                       Grid.Column="1"
-                       Grid.Row="2" />
-            <Rectangle x:Name="workingRectangle"
-                       Fill="Transparent"
-                       Stroke="White"
-                       Grid.Column="1"
-                       Grid.Row="1" />
-        </Grid>
 
 
-        <StackPanel Grid.Column="1"
-                    Orientation="Vertical"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom">
-            <!--Settings button-->
-            <Button HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource MahApps.Styles.Button.Circle}"
-                    Command="{Binding SettingsCommand}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
-                    IsEnabled="{Binding CanSettings}"
-                    Width="44"
-                    Height="44"
-                    Margin="0,0,0,10"
-                    Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
+    <Grid Grid.Column="1">
 
-                <iconPacks:PackIconMaterial Kind="Cog"
-                                            Width="20"
-                                            Height="20" />
-            </Button>
 
-            <!--Start button-->
-            <Button Command="{Binding StartStopCommand}"
-                    IsEnabled="{Binding CanStartStop}"
-                    Content="{Binding StartStopText}"
-                    Width="44"
-                    Height="44">
-                <Button.Style>
-                    <Style TargetType="Button"
-                           BasedOn="{StaticResource MahApps.Styles.Button.Circle}">
-                        <Setter Property="Background"
-                                Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsRunning}"
-                                         Value="True">
-                                <Setter Property="Background"
-                                        Value="Green" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-            </Button>
-        </StackPanel>
+      <!-- Seiten + unten -->
+      <Border Margin="22,0,20,30"
+              BorderThickness="2,0,2,2"
+              Background="Transparent">
+        <Border.Style>
+          <Style TargetType="Border">
+            <!-- Default -->
+            <Setter Property="BorderBrush"
+                    Value="LightGray" />
+            <Setter Property="BorderThickness"
+                    Value="2,0,2,2" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsRunning}"
+                           Value="True">
+                <Setter Property="BorderBrush"
+                        Value="Green" />
+                <Setter Property="BorderThickness"
+                        Value="3,0,3,3" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Border.Style>
+      </Border>
+      <Border BorderBrush="{StaticResource BackgroundBrush}"
+              BorderThickness="20,0,20,20"
+              Background="Transparent"
+              Margin="2,0,0,10">
+      </Border>
     </Grid>
+
+    <StackPanel Grid.Column="2"
+                Orientation="Vertical"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="2,0,0,10">
+      <!--Settings button-->
+      <Button HorizontalAlignment="Right"
+              VerticalAlignment="Bottom"
+              Style="{StaticResource MahApps.Styles.Button.Circle}"
+              Command="{Binding SettingsCommand}"
+              CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
+              IsEnabled="{Binding CanSettings}"
+              ToolTip="Settings"
+              Width="40"
+              Height="40"
+              Margin="0,0,0,5"
+              Background="{DynamicResource MahApps.Brushes.ThemeBackground}">
+
+        <iconPacks:PackIconMaterial Kind="Cog"
+                                    Width="20"
+                                    Height="20" />
+      </Button>
+
+      <!--Start button-->
+      <Button Command="{Binding StartStopCommand}"
+              IsEnabled="{Binding CanStartStop}"
+              Content="{Binding StartStopText}"
+              ToolTip="Start regex detection"
+              Width="40"
+              Height="40">
+        <Button.Style>
+          <Style TargetType="Button"
+                 BasedOn="{StaticResource MahApps.Styles.Button.Circle}">
+            <Setter Property="Background"
+                    Value="{DynamicResource MahApps.Brushes.ThemeBackground}" />
+            <Style.Triggers>
+              <DataTrigger Binding="{Binding IsRunning}"
+                           Value="True">
+                <Setter Property="Background"
+                        Value="Green" />
+              </DataTrigger>
+            </Style.Triggers>
+          </Style>
+        </Button.Style>
+      </Button>
+    </StackPanel>
+  </Grid>
 </mah:MetroWindow>

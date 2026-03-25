@@ -45,6 +45,9 @@ namespace POECraftHelper.ViewModels
         OnPropertyChanged (nameof (IsRunning));
         OnPropertyChanged (nameof (StartStopText));
         OnPropertyChanged (nameof (CanSettings));
+        OnPropertyChanged (nameof (CanExit));
+        OnPropertyChanged (nameof (CanMinimize));
+        OnPropertyChanged (nameof (CanDrag));
       }
     }
 
@@ -112,6 +115,8 @@ namespace POECraftHelper.ViewModels
 
     public ICommand StartStopCommand { get; }
     public ICommand SettingsCommand { get; }
+    public ICommand ExitCommand { get; }
+    public ICommand MinimizeCommand { get; }
 
     #endregion
 
@@ -121,6 +126,11 @@ namespace POECraftHelper.ViewModels
 
     public Boolean CanSettings => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
 
+    public Boolean CanExit => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+
+    public Boolean CanMinimize => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+
+    public Boolean CanDrag => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
     #endregion
 
 
@@ -138,6 +148,8 @@ namespace POECraftHelper.ViewModels
 
       StartStopCommand = new RelayCommand (OnStartStop);
       SettingsCommand = new RelayCommand<Window> (OnSettings);
+      ExitCommand = new RelayCommand (OnExit);
+      MinimizeCommand = new RelayCommand (OnMinimize);
     }
 
     private async void OnStartStop ()
@@ -180,6 +192,8 @@ namespace POECraftHelper.ViewModels
       finally
       {
         IsRunning = false;
+        m_cancellationTokenSource?.Dispose ();
+        m_cancellationTokenSource = null;
       }
     }
 
@@ -220,6 +234,19 @@ namespace POECraftHelper.ViewModels
       // GUI aktualisieren.
       OnPropertyChanged (nameof (CanSettings));
       OnPropertyChanged (nameof (CanStartStop));
+      OnPropertyChanged (nameof (CanExit));
+      OnPropertyChanged (nameof (CanMinimize));
+      OnPropertyChanged (nameof (CanDrag));
+    }
+
+    private void OnExit ()
+    {
+      m_windowService.ShutdownApp ();
+    }
+
+    private void OnMinimize ()
+    {
+      m_windowService.MinimizeApp ();
     }
 
     private void OnSettingsClosed (Object sender, EventArgs e)
@@ -227,6 +254,9 @@ namespace POECraftHelper.ViewModels
       // GUI aktualisieren.
       OnPropertyChanged (nameof (CanSettings));
       OnPropertyChanged (nameof (CanStartStop));
+      OnPropertyChanged (nameof (CanExit));
+      OnPropertyChanged (nameof (CanMinimize));
+      OnPropertyChanged (nameof (CanDrag));
 
       m_windowService.SettingWindowClosed -= OnSettingsClosed;
     }

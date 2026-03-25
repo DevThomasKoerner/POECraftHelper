@@ -26,10 +26,11 @@ namespace POECraftHelper.Services
 
     event EventHandler SettingWindowClosed;
 
-
     void ShowOverlay (Rect x_bounds);
 
+    void ShutdownApp ();
 
+    void MinimizeApp ();
   }
 
   public class WindowService : IWindowService
@@ -98,10 +99,13 @@ namespace POECraftHelper.Services
       view.Show ();
     }
 
-    public void ShowOverlay (Rect x_bounds)
+    public async void ShowOverlay (Rect x_bounds)
     {
       if (m_overlayView == null)
         return;
+
+      var vm = (OverlayViewModel)m_overlayView.DataContext;
+      vm.CanOkay = false;
 
       m_overlayView.Left = x_bounds.Left;
       m_overlayView.Top = x_bounds.Top;
@@ -112,6 +116,11 @@ namespace POECraftHelper.Services
         m_overlayView.Show ();
 
       m_overlayView.Activate ();
+
+      // Okay button erst nach 800ms aktivieren, damit der Benutzer nicht ausversehen sofort auf Okay klickt.
+      await Task.Delay (800);
+
+      vm.CanOkay = true;
     }
 
     public Boolean IsSettingsOpen ()
@@ -128,6 +137,20 @@ namespace POECraftHelper.Services
       }
 
       SettingWindowClosed?.Invoke (this, EventArgs.Empty);
+    }
+
+    public void ShutdownApp ()
+    {
+      Application.Current.Shutdown ();
+    }
+
+    public void MinimizeApp ()
+    {
+      var window = Application.Current.MainWindow;
+      if (window != null)
+      {
+        window.WindowState = WindowState.Minimized;
+      }
     }
   }
 }

@@ -149,11 +149,7 @@ namespace POECraftHelper.ViewModels
     #endregion
 
     #region Commands
-
-    public ICommand AddRegexCommand { get; }
-    public ICommand RemoveRegexCommand { get; }
     public ICommand SaveCommand { get; }
-    public ICommand ToggleEditTitleCommand { get; } 
     public ICommand SliderChangedCommand { get; }
 
     #endregion
@@ -166,10 +162,7 @@ namespace POECraftHelper.ViewModels
       m_settingsService = x_settingsService;
       m_windowService = x_windowService;
 
-      AddRegexCommand = new RelayCommand<RegexItem> (OnAddRegex);
-      RemoveRegexCommand = new RelayCommand<RegexItem> (OnRemoveRegex);
       SaveCommand = new RelayCommand (OnSave);
-      ToggleEditTitleCommand = new RelayCommand (OnToggleEditTitle);
       SliderChangedCommand = new RelayCommand<Double> (OnSoundChanged);
 
       Initialize ();
@@ -220,27 +213,6 @@ namespace POECraftHelper.ViewModels
       m_settingsService.SaveSettings (windowSettings);
 
       m_windowService.CloseSettings ();
-    }
-
-    private void OnToggleEditTitle ()
-    {
-      IsEditingTitle = !IsEditingTitle;
-    }
-
-    private void OnAddRegex (RegexItem x_regexItem)
-    {
-      if (x_regexItem == null || String.IsNullOrWhiteSpace (x_regexItem.RegexName) || String.IsNullOrWhiteSpace (x_regexItem.RegexPattern))
-        return;
-
-      RegexItems.Add (x_regexItem);
-    }
-
-    private void OnRemoveRegex (RegexItem x_regexItem)
-    {
-      if (x_regexItem == null)
-        return;
-
-      RegexItems.Remove (x_regexItem);
     }
 
   }

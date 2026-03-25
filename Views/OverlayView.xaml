@@ -53,7 +53,8 @@
                 Content="Okay"
                 Height="44"
                 Width="44"
-                Command="{Binding OkayCommand}" />
+                Command="{Binding OkayCommand}"
+                IsEnabled="{Binding CanOkay}"/>
 
 
     </Grid>
