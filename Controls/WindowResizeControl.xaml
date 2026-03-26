@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="POECraftHelper.Controls.WindowResizeControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:POECraftHelper.Controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d">
+  <Grid Width="25"
+        Height="25"
+        MouseLeftButtonDown="Ellipse_MouseLeftButtonDown"
+        MouseEnter="Ellipse_MouseEnter"
+        MouseLeave="Ellipse_MouseLeave">
+    <Ellipse Fill="#3b3938"
+             Width="25"
+             Height="25" />
+
+    <iconPacks:PackIconMaterial x:Name="_resizeIcon"
+                                Width="20"
+                                Height="20"
+                                Foreground="#fcba1e"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+  </Grid>
+</UserControl>

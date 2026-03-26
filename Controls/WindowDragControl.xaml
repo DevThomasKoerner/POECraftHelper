@@ -14,7 +14,7 @@
         MouseLeave="Ellipse_MouseLeave">
     <Ellipse Fill="#3b3938"
              Width="30"
-             Height="30"/>
+             Height="30" />
     <mah:FontIcon FontFamily="Segoe MDL2 Assets"
                   Glyph="&#xE7C2;"
                   Foreground="#fcba1e"
@@ -41,5 +41,4 @@
       </mah:FontIcon.RenderTransform>
     </mah:FontIcon>
   </Grid>
-
 </UserControl>
