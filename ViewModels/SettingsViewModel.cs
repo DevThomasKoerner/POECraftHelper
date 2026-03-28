@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 using POECraftHelper.Core;
+using POECraftHelper.Dialogs;
 using POECraftHelper.Models;
 using POECraftHelper.Services;
 
 namespace POECraftHelper.ViewModels
 {
-  public class SettingsViewModel : ObservableObject
+  public class SettingsViewModel : DialogViewModelBase
   {
     #region Services
 
@@ -21,13 +18,7 @@ namespace POECraftHelper.ViewModels
 
     private readonly ISettingsService m_settingsService;
 
-    private readonly IWindowService m_windowService;
-
-    #endregion
-
-    #region Private Fields
-
-
+    private readonly IDialogService m_dialogService;
 
     #endregion
 
@@ -122,6 +113,7 @@ namespace POECraftHelper.ViewModels
     public ObservableCollection<SoundType> AvailableSounds { get; } = new ObservableCollection<SoundType> (Enum.GetValues<SoundType> ());
 
     private SoundType m_selectedSound;
+
     public SoundType SelectedSound
     {
       get => m_selectedSound;
@@ -151,26 +143,32 @@ namespace POECraftHelper.ViewModels
     #region Commands
     public ICommand SaveCommand { get; }
     public ICommand SliderChangedCommand { get; }
-
+    public ICommand AddRegexCommand { get; }
+    public ICommand RemoveRegexCommand { get; }
+    public ICommand CopyRegexCommand { get; }
     #endregion
 
 
-    public SettingsViewModel (ISoundPlayerService x_soundPlayerService, ILoggingService x_loggingService, ISettingsService x_settingsService, IWindowService x_windowService)
+    public SettingsViewModel (ISoundPlayerService x_soundPlayerService, ILoggingService x_loggingService, ISettingsService x_settingsService, IDialogService x_dialogService)
     {
-      m_soundPlayerService = x_soundPlayerService;
-      m_loggingService = x_loggingService;
-      m_settingsService = x_settingsService;
-      m_windowService = x_windowService;
+      m_soundPlayerService = x_soundPlayerService ?? throw new ArgumentNullException (nameof (x_soundPlayerService));
+      m_loggingService = x_loggingService ?? throw new ArgumentNullException (nameof (x_loggingService));
+      m_settingsService = x_settingsService ?? throw new ArgumentNullException (nameof (x_settingsService));
+      m_dialogService = x_dialogService ?? throw new ArgumentNullException (nameof (x_dialogService));
 
       SaveCommand = new RelayCommand (OnSave);
       SliderChangedCommand = new RelayCommand<Double> (OnSoundChanged);
+      AddRegexCommand = new RelayCommand (OnAddRegex);
+      RemoveRegexCommand = new RelayCommand<RegexItem> (OnRemoveRegex);
+      CopyRegexCommand = new RelayCommand<RegexItem> (OnCopyRegex);
 
-      Initialize ();
+      InitializeSettings ();
+      InitializeWindow ();
     }
 
-    private void Initialize ()
+    private void InitializeSettings ()
     {
-      var currentSettings = m_settingsService.LoadSettings<CraftHelperSettings> ();
+      var currentSettings = m_settingsService.LoadSettings<UserSettings> ();
 
       m_soundEnabled = currentSettings.SoundEnabled;
       m_soundVolume = currentSettings.SoundVolume;
@@ -185,7 +183,7 @@ namespace POECraftHelper.ViewModels
       // Falls keine Regex-Items vorhanden sind, dann ein Beispiel-Item hinzufügen, damit der Benutzer eine Vorlage hat.
       if (RegexItems.Any () == false)
       {
-        RegexItems.Add (new RegexItem ("Body Armour Regex", "\"^(Prime)\\sConquest Lamellar|^Conquest Lamellar\" \"Conquest Lamellar\\s|Conquest Lamellar$\""));
+        RegexItems.Add (new RegexItem ("Body Armour", "\"^(Prime)\\sConquest Lamellar|^Conquest Lamellar\" \"Conquest Lamellar\\s|Conquest Lamellar$\""));
       }
 
       OnPropertyChanged (nameof (SoundEnabled));
@@ -193,27 +191,94 @@ namespace POECraftHelper.ViewModels
       OnPropertyChanged (nameof (SelectedSound));
     }
 
+    private void InitializeWindow ()
+    {
+      var windowSettings = m_settingsService.LoadSettings<SettingsWindowSettings> ();
+      m_windowHeight = windowSettings.SettingsWindowHeight;
+      m_windowWidth = windowSettings.SettingsWindowWidth;
+      m_windowLeft = windowSettings.SettingsWindowLeft;
+      m_windowTop = windowSettings.SettingsWindowTop;
+
+      OnPropertyChanged (nameof (WindowHeight));
+      OnPropertyChanged (nameof (WindowWidth));
+      OnPropertyChanged (nameof (WindowLeft));
+      OnPropertyChanged (nameof (WindowTop));
+    }
+
     private void OnSoundChanged (Double x_soundVolume)
     {
       m_soundPlayerService.PlaySound (SelectedSound, x_soundVolume);
     }
 
-    private void OnSave ()
+    private void OnAddRegex ()
     {
-      var craftHelperSettings = new CraftHelperSettings ();
-      craftHelperSettings.SoundEnabled = SoundEnabled;
-      craftHelperSettings.SoundVolume = SoundVolume;
-      craftHelperSettings.SoundType = SelectedSound;
-      craftHelperSettings.RegexPatterns = RegexItems.ToDictionary (item => item.RegexName, item => item.RegexPattern);
-      m_settingsService.SaveSettings (craftHelperSettings);
+      var viewModel = m_dialogService.ShowDialog<RegexCreationViewModel, RegexCreationDialog> ();
+      if (viewModel.DialogResult == false)
+        return;
 
-      var windowSettings = new WindowSettings ();
-      windowSettings.SettingsWindowHeight = WindowHeight;
-      windowSettings.SettingsWindowWidth = WindowWidth;
-      m_settingsService.SaveSettings (windowSettings);
+      if (String.IsNullOrWhiteSpace (viewModel.RegexPattern) == true ||
+          String.IsNullOrWhiteSpace (viewModel.RegexPattern) == true)
+        return;
 
-      m_windowService.CloseSettings ();
+      var newRegexItem = new RegexItem (viewModel.RegexTitle, viewModel.RegexPattern);
+      if (RegexItems.Any (x => x.RegexTitle.Equals (newRegexItem.RegexTitle)) == false)
+        RegexItems.Add (newRegexItem);
     }
 
+    private void OnRemoveRegex (RegexItem x_itemToRemove)
+    {
+      if (x_itemToRemove == null)
+        return;
+
+      if (RegexItems.Contains (x_itemToRemove) == false)
+        return;
+
+      RegexItems.Remove (x_itemToRemove);
+    }
+
+    private async void OnCopyRegex (RegexItem x_itemToCopy)
+    {
+      if (x_itemToCopy == null)
+        return;
+
+      Clipboard.SetText (x_itemToCopy.RegexPattern);
+
+      x_itemToCopy.IsCopiedToClipboard = true;
+
+      // nach kurzer Zeit zurücksetzen
+      await Task.Delay (1500);
+
+      x_itemToCopy.IsCopiedToClipboard = false;
+    }
+
+    private void OnSave ()
+    {
+      try
+      {
+        var craftHelperSettings = new UserSettings ();
+        craftHelperSettings.SoundEnabled = SoundEnabled;
+        craftHelperSettings.SoundVolume = SoundVolume;
+        craftHelperSettings.SoundType = SelectedSound;
+        craftHelperSettings.RegexPatterns = RegexItems.ToDictionary (item => item.RegexTitle, item => item.RegexPattern);
+        m_settingsService.SaveSettings (craftHelperSettings);
+
+        var windowSettings = new SettingsWindowSettings ();
+        windowSettings.SettingsWindowHeight = WindowHeight;
+        windowSettings.SettingsWindowWidth = WindowWidth;
+        windowSettings.SettingsWindowLeft = WindowLeft;
+        windowSettings.SettingsWindowTop = WindowTop;
+        m_settingsService.SaveSettings (windowSettings);
+      }
+      catch (Exception ex)
+      {
+        m_loggingService.Log ("Error saving settings: " + ex.Message);
+        DialogResult = false;
+        Close (false);
+        return;
+      }
+
+      DialogResult = true;
+      Close (true);
+    }
   }
 }

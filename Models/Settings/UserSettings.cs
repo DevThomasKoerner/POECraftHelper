@@ -1,9 +1,8 @@
 ﻿using POECraftHelper.Interfaces;
-using POECraftHelper.Properties;
 
 namespace POECraftHelper.Models
 {
-  public class CraftHelperSettings : ISettings
+  public class UserSettings : ISettings
   {
     public Boolean SoundEnabled { get; set; }
     public Int32 SoundVolume { get; set; }
@@ -12,7 +11,7 @@ namespace POECraftHelper.Models
     public Int32 WindowTop { get; set; }
     public Dictionary<String, String> RegexPatterns { get; set; }
 
-    public CraftHelperSettings () 
+    public UserSettings () 
     {
       SoundEnabled = true;
       SoundVolume = 100;

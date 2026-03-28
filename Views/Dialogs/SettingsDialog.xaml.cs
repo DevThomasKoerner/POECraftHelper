@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,16 +12,24 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using POECraftHelper.ViewModels;
 
-namespace POECraftHelper.Views
+namespace POECraftHelper.Dialogs
 {
   /// <summary>
   /// Ansicht für den Dashboard, der die Einstellungen und Informationen anzeigt.
   /// </summary>
-  public partial class SettingsView : MetroWindow
+  public partial class SettingsDialog: MetroWindow
   {
-    public SettingsView ()
+    public SettingsDialog ()
     {
       InitializeComponent ();
     }
+
+    //private void OnClosing (object sender, CancelEventArgs e)
+    //{
+    //  if (DataContext is SettingsViewModel vm)
+    //  {
+    //    vm.OnDialogClosing ();
+    //  }
+    //}
   }
 }

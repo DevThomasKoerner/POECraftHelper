@@ -3,7 +3,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-
 namespace POECraftHelper.Controls
 {
   [StructLayout (LayoutKind.Sequential)]
@@ -55,6 +54,17 @@ namespace POECraftHelper.Controls
       }
     }
 
+    public static readonly DependencyProperty IsResizeEnabledProperty = DependencyProperty.Register (nameof (IsResizeEnabled),
+                                                                                                     typeof (Boolean),
+                                                                                                     typeof (WindowResizeControl),
+                                                                                                     new PropertyMetadata (true));
+
+    public Boolean IsResizeEnabled
+    {
+      get => (Boolean)GetValue (IsResizeEnabledProperty);
+      set => SetValue (IsResizeEnabledProperty, value);
+    }
+
     private void UpdateIconKind ()
     {
       if (_resizeIcon == null)
@@ -65,6 +75,9 @@ namespace POECraftHelper.Controls
 
     private void Ellipse_MouseLeftButtonDown (object sender, MouseButtonEventArgs e)
     {
+      if (IsResizeEnabled == false)
+        return;
+
       if (Window.GetWindow (this) is Window window)
       {
         GetCursorPos (out m_startMousePos);
@@ -113,11 +126,17 @@ namespace POECraftHelper.Controls
 
     private void Ellipse_MouseEnter (object sender, MouseEventArgs e)
     {
+      if (IsResizeEnabled == false)
+        return;
+
       Mouse.OverrideCursor = IsVertical ? Cursors.SizeNS : Cursors.SizeWE;
     }
 
     private void Ellipse_MouseLeave (object sender, MouseEventArgs e)
     {
+      if (IsResizeEnabled == false)
+        return;
+
       Mouse.OverrideCursor = null;
     }
   }

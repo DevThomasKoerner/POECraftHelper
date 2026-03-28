@@ -20,6 +20,21 @@
                                 Height="20"
                                 Foreground="#fcba1e"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
+                                VerticalAlignment="Center"
+                                IsEnabled="{Binding IsResizeEnabled, RelativeSource={RelativeSource AncestorType=UserControl}}">
+      <iconPacks:PackIconMaterial.Style>
+        <Style TargetType="iconPacks:PackIconMaterial">
+          <Setter Property="Opacity"
+                  Value="1" />
+          <Style.Triggers>
+            <Trigger Property="IsEnabled"
+                     Value="False">
+              <Setter Property="Opacity"
+                      Value="0.3" />
+            </Trigger>
+          </Style.Triggers>
+        </Style>
+      </iconPacks:PackIconMaterial.Style>
+    </iconPacks:PackIconMaterial>
   </Grid>
 </UserControl>

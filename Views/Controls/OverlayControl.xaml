@@ -1,0 +1,49 @@
+﻿<UserControl x:Class="POECraftHelper.Controls.OverlayControl"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+                 xmlns:local="clr-namespace:POECraftHelper.Controls"
+                 mc:Ignorable="d">
+
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <Grid>
+    <Grid.Background>
+      <SolidColorBrush Color="#E6000000" />
+    </Grid.Background>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Label Grid.Row="0"
+           Content="Regex hit!"
+           HorizontalAlignment="Center"
+           VerticalAlignment="Center"
+           FontSize="16"
+           Margin="10" />
+
+    <Button Grid.Row="1"
+            x:Name="_btnOkay"
+            Style="{StaticResource MahApps.Styles.Button.Circle}"
+            Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
+            Margin="10"
+            Content="Okay"
+            Height="44"
+            Width="44"
+            Command="{Binding OkayCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            IsEnabled="{Binding IsOkayEnabled, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay}" />
+  </Grid>
+</UserControl>

@@ -9,14 +9,16 @@ namespace POECraftHelper.Models
 {
   public class RegexItem : ObservableObject
   {
-    private String m_regexName;
-    public String RegexName
+    #region Binding Properties
+
+    private String m_regexTitle;
+    public String RegexTitle
     {
-      get => m_regexName;
+      get => m_regexTitle;
       set 
-      { 
-        m_regexName = value; 
-        OnPropertyChanged (nameof (RegexName)); 
+      {
+        m_regexTitle = value; 
+        OnPropertyChanged (nameof (RegexTitle)); 
       }
     }
 
@@ -31,9 +33,22 @@ namespace POECraftHelper.Models
       }
     }
 
-    public RegexItem (String x_regexName, String x_regexPattern)
+    private bool m_isCopiedToClipboard;
+    public bool IsCopiedToClipboard
     {
-      RegexName = x_regexName;
+      get => m_isCopiedToClipboard;
+      set
+      {
+        m_isCopiedToClipboard = value;
+        OnPropertyChanged (nameof (IsCopiedToClipboard));
+      }
+    }
+
+    #endregion
+
+    public RegexItem (String x_regexTitle, String x_regexPattern)
+    {
+      RegexTitle = x_regexTitle;
       RegexPattern = x_regexPattern;
     }
   }

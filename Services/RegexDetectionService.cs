@@ -34,10 +34,8 @@ namespace POECraftHelper.Services
         CvInvoke.CvtColor (colorImage, grayImage, ColorConversion.Bgr2Gray);
         CvInvoke.InRange (grayImage, new ScalarArray (188), new ScalarArray (188), maskImage);
 
-        //maskImage.Save ("c:\\temp\\maskedImage.png");
+        colorImage.Save ("c:\\temp\\colorImage.png");
         int count = CvInvoke.CountNonZero (maskImage);
-
-        //return true;
 
         if (count > 100)
           return true;

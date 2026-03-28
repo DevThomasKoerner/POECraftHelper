@@ -18,19 +18,22 @@ namespace POECraftHelper.Core
       services.AddSingleton<IScreenshotCaptureService, ScreenshotCaptureService> ();
       services.AddSingleton<IRegexDetectionService, RegexDetectionService> ();
       services.AddSingleton<ILoggingService, LoggingService> ();
-      services.AddSingleton<IWindowService, WindowService> ();
+      services.AddSingleton<IApplicationService, ApplicationService> ();
       services.AddSingleton<ISoundPlayerService, SoundPlayerService> ();
       services.AddSingleton<ISettingsService, SettingsService> ();
+      services.AddSingleton<IDialogService, DialogService> ();
 
-      // ViewModels
+      // Hauptansicht
       services.AddSingleton<ViewModels.CraftHelperViewModel> ();
-      services.AddTransient<ViewModels.SettingsViewModel> ();
-      services.AddTransient<ViewModels.OverlayViewModel> ();
-
-      // Views
       services.AddSingleton<Views.CraftHelperView> ();
-      services.AddTransient<Views.SettingsView> ();
-      services.AddTransient<Views.OverlayView> ();
+
+      // Settings-Dialog
+      services.AddTransient<ViewModels.SettingsViewModel> ();
+      services.AddTransient<Dialogs.SettingsDialog> ();
+
+      // RegexCreation-Dialog
+      services.AddTransient<ViewModels.RegexCreationViewModel> ();
+      services.AddTransient<Dialogs.RegexCreationDialog> ();
 
       return services.BuildServiceProvider ();
     }

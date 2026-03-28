@@ -12,16 +12,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
-using POECraftHelper.ViewModels;
 
-namespace POECraftHelper.Views
+namespace POECraftHelper.Dialogs
 {
   /// <summary>
-  /// Interaction logic for OverlayView.xaml
+  /// Interaction logic for RegexCreationDialog.xaml
   /// </summary>
-  public partial class OverlayView : MetroWindow
+  public partial class RegexCreationDialog : MetroWindow
   {
-    public OverlayView ()
+    public RegexCreationDialog ()
     {
       InitializeComponent ();
     }

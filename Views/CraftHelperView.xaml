@@ -6,6 +6,7 @@
                  xmlns:local="clr-namespace:POECraftHelper.Views"
                  xmlns:controls="clr-namespace:POECraftHelper.Controls"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:converters="clr-namespace:POECraftHelper.Converters"
                  xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
                  mc:Ignorable="d"
                  WindowStyle="None"
@@ -16,6 +17,7 @@
                  ShowMaxRestoreButton="False"
                  Background="Transparent"
                  BorderThickness="0"
+                 ResizeMode="NoResize"
                  Topmost="True"
                  MinHeight="150"
                  MinWidth="150"
@@ -29,6 +31,8 @@
       <SolidColorBrush x:Key="BackgroundBrush"
                        Color="#CC000000" />
 
+      <converters:BoolToVisibilityConverter x:Key="_booleanToVisibilityConverter" />
+      
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
@@ -44,6 +48,12 @@
       <ColumnDefinition Width="Auto" />
     </Grid.ColumnDefinitions>
 
+    <controls:OverlayControl Visibility="{Binding IsOverlayVisible, Converter={StaticResource _booleanToVisibilityConverter}}"
+                             Grid.ColumnSpan="3"
+                             OkayCommand="{Binding OkayCommand}"
+                             IsOkayEnabled="{Binding IsOkayEnabled}"
+                             Panel.ZIndex="100"/>
+    
     <StackPanel Grid.Column="0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom">
@@ -121,32 +131,31 @@
       <controls:WindowResizeControl HorizontalAlignment="Center"
                                     VerticalAlignment="Bottom"
                                     Panel.ZIndex="10"
-                                    IsVertical="True" />
+                                    IsVertical="True"
+                                    IsResizeEnabled="{Binding CanResize}" />
 
       <controls:WindowResizeControl HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     Panel.ZIndex="10"
                                     Margin="-10,-30,0,0"
+                                    IsResizeEnabled="{Binding CanResize}"
                                     IsVertical="False" />
 
       <!-- Seiten + unten -->
-      <Border Margin="22,0,20,30"
-              BorderThickness="2,0,2,2"
+      <Border SizeChanged="Border_SizeChanged"
+              Margin="22,0,20,30"
+              BorderThickness="3,0,3,3"
               Background="Transparent">
         <Border.Style>
           <Style TargetType="Border">
             <!-- Default -->
             <Setter Property="BorderBrush"
                     Value="LightGray" />
-            <Setter Property="BorderThickness"
-                    Value="2,0,2,2" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding IsRunning}"
                            Value="True">
                 <Setter Property="BorderBrush"
                         Value="Green" />
-                <Setter Property="BorderThickness"
-                        Value="3,0,3,3" />
               </DataTrigger>
             </Style.Triggers>
           </Style>

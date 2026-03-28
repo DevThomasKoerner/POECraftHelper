@@ -1,8 +1,12 @@
 ﻿using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using POECraftHelper.Core;
+using POECraftHelper.Dialogs;
+using POECraftHelper.Interfaces;
 using POECraftHelper.Models;
 using POECraftHelper.Services;
 
@@ -14,7 +18,7 @@ namespace POECraftHelper.ViewModels
 
     private readonly IRegexDetectionService m_regexDetectionService;
 
-    private readonly IWindowService m_windowService;
+    private readonly IDialogService m_dialogService;
 
     private readonly ILoggingService m_loggingService;
 
@@ -22,13 +26,15 @@ namespace POECraftHelper.ViewModels
 
     private readonly ISettingsService m_settingsService;
 
+    private readonly IApplicationService m_applicationService;
+
+    //private readonly IOverlayService m_overlayService;
+
     #endregion
 
     #region Private Fields
 
     private CancellationTokenSource m_cancellationTokenSource;
-
-    private CraftHelperSettings m_currentSettings;
 
     #endregion
 
@@ -48,6 +54,18 @@ namespace POECraftHelper.ViewModels
         OnPropertyChanged (nameof (CanExit));
         OnPropertyChanged (nameof (CanMinimize));
         OnPropertyChanged (nameof (CanDrag));
+        OnPropertyChanged (nameof (CanResize));
+      }
+    }
+
+    private Boolean m_isOverlayVisible;
+    public Boolean IsOverlayVisible
+    {
+      get => m_isOverlayVisible;
+      set
+      {
+        m_isOverlayVisible = value;
+        OnPropertyChanged (nameof (IsOverlayVisible));
       }
     }
 
@@ -63,7 +81,7 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private Double m_windowHeight = 272;
+    private Double m_windowHeight;
     public Double WindowHeight
     {
       get => m_windowHeight;
@@ -74,7 +92,7 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private Double m_windowWidth = 206;
+    private Double m_windowWidth;
     public Double WindowWidth
     {
       get => m_windowWidth;
@@ -85,7 +103,7 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private Double m_windowLeft = 274;
+    private Double m_windowLeft;
     public Double WindowLeft
     {
       get => m_windowLeft;
@@ -96,7 +114,7 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private Double m_windowTop = 348;
+    private Double m_windowTop;
     public Double WindowTop
     {
       get => m_windowTop;
@@ -107,9 +125,18 @@ namespace POECraftHelper.ViewModels
       }
     }
 
+    private Boolean m_isOkayEnabled;
+    public Boolean IsOkayEnabled
+    {
+      get => m_isOkayEnabled;
+      set
+      {
+        m_isOkayEnabled = value;
+        OnPropertyChanged (nameof (IsOkayEnabled));
+      }
+    }
+
     #endregion
-
-
 
     #region Commands
 
@@ -117,39 +144,67 @@ namespace POECraftHelper.ViewModels
     public ICommand SettingsCommand { get; }
     public ICommand ExitCommand { get; }
     public ICommand MinimizeCommand { get; }
+    public ICommand OkayCommand { get; }
 
     #endregion
 
     #region CanProperties
 
-    public Boolean CanStartStop => (m_windowService.IsSettingsOpen () == false);
+    public Boolean CanStartStop => (IsRunning == false);
 
-    public Boolean CanSettings => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+    public Boolean CanSettings => (IsRunning == false);
 
-    public Boolean CanExit => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+    public Boolean CanExit => (IsRunning == false);
 
-    public Boolean CanMinimize => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+    public Boolean CanMinimize => (IsRunning == false);
 
-    public Boolean CanDrag => (IsRunning == false) && (m_windowService.IsSettingsOpen () == false);
+    public Boolean CanDrag => (IsRunning == false);
+
+    public Boolean CanResize => (IsRunning == false);
+
     #endregion
 
+    public Rectangle InnerBorderRect { get; private set; }
+
+    public void SetInnerBorderRect (Rectangle rect)
+    {
+      InnerBorderRect = rect;
+      // Optional: PropertyChanged, wenn du es gebunden hast
+      OnPropertyChanged (nameof (InnerBorderRect));
+    }
 
     public CraftHelperViewModel (IRegexDetectionService x_regexDetectionService, 
-                                 IWindowService x_windowService, 
+                                 IDialogService x_dialogService, 
                                  ILoggingService x_loggingService,
                                  ISoundPlayerService x_soundPlayerService,
-                                 ISettingsService x_settingsService)
+                                 ISettingsService x_settingsService,
+                                 IApplicationService x_applicationService)
     {
-      m_regexDetectionService = x_regexDetectionService;
-      m_windowService = x_windowService;
-      m_loggingService = x_loggingService;
-      m_soundPlayerService = x_soundPlayerService;
-      m_settingsService = x_settingsService;
+      m_regexDetectionService = x_regexDetectionService ?? throw new ArgumentNullException (nameof (x_regexDetectionService));
+      m_dialogService = x_dialogService ?? throw new ArgumentNullException (nameof (x_dialogService));
+      m_loggingService = x_loggingService ?? throw new ArgumentNullException (nameof (x_loggingService));
+      m_soundPlayerService = x_soundPlayerService ?? throw new ArgumentNullException (nameof (x_soundPlayerService));
+      m_settingsService = x_settingsService ?? throw new ArgumentNullException (nameof (x_settingsService));
+      m_applicationService = x_applicationService ?? throw new ArgumentNullException (nameof (x_applicationService));
 
       StartStopCommand = new RelayCommand (OnStartStop);
       SettingsCommand = new RelayCommand<Window> (OnSettings);
       ExitCommand = new RelayCommand (OnExit);
       MinimizeCommand = new RelayCommand (OnMinimize);
+      OkayCommand = new RelayCommand (OnOkay);
+
+      Initilize ();
+    }
+
+    private void Initilize ()
+    {
+      IsOverlayVisible = false;
+
+      var windowSettings = m_settingsService.LoadSettings<MainWindowSettings> ();
+      WindowTop = windowSettings.MainWindowTop;
+      WindowLeft = windowSettings.MainWindowLeft;
+      WindowHeight = windowSettings.MainWindowHeight;
+      WindowWidth = windowSettings.MainWindowWidth;
     }
 
     private async void OnStartStop ()
@@ -164,22 +219,17 @@ namespace POECraftHelper.ViewModels
       {
         IsRunning = true;
 
+        // CancellationTokenSource erstellen, damit der Prozess bei Bedarf abgebrochen werden kann.
         m_cancellationTokenSource = new CancellationTokenSource ();
 
+        // Progress-Reporter erstellen.
         var craftDetectionProgress = new Progress<CraftDetectionProgress> (OnProgressChanged);
 
-        m_currentSettings = m_settingsService.LoadSettings<CraftHelperSettings> ();
+        // Detektionsbereich ermitteln.
+        var detectionArea = GetDetectionArea ();
 
-        m_windowService.Initialize ();
-
-        var dpi = VisualTreeHelper.GetDpi (Application.Current.MainWindow);
-
-        var rect = new Rectangle ((Int32)((WindowLeft + 20) * dpi.DpiScaleX),
-                                  (Int32)(WindowTop * dpi.DpiScaleY),
-                                  (Int32)(WindowWidth * dpi.DpiScaleX),
-                                  (Int32)(WindowHeight * dpi.DpiScaleY));
-
-        await Task.Run (() => StartAsync (m_cancellationTokenSource.Token, craftDetectionProgress, rect));
+        // Detektionsprozess starten.
+        await Task.Run (() => StartDetectionAsync (m_cancellationTokenSource.Token, craftDetectionProgress, detectionArea));
       }
       catch (OperationCanceledException)
       {
@@ -197,11 +247,13 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private void StartAsync (CancellationToken cancellationToken, IProgress<CraftDetectionProgress> x_progressReporter, Rectangle x_rect)
+    private async Task StartDetectionAsync (CancellationToken cancellationToken, IProgress<CraftDetectionProgress> x_progressReporter, Rectangle x_detectionArea)
     {
+      var detectionArea = x_detectionArea;
+      await Task.Delay (1000);
       while (cancellationToken.IsCancellationRequested == false)
       {
-        if (m_regexDetectionService.Detect (x_rect) == true)
+        if (m_regexDetectionService.Detect (detectionArea) == true)
         {
           x_progressReporter.Report (new CraftDetectionProgress (true));
           break;
@@ -209,27 +261,45 @@ namespace POECraftHelper.ViewModels
       }
     }
 
-    private void OnProgressChanged (CraftDetectionProgress x_progress)
+    private Rectangle GetDetectionArea ()
+    {
+      return InnerBorderRect;
+    }
+
+    private async void OnProgressChanged (CraftDetectionProgress x_progress)
     {
       if (x_progress.RegexHit == true)
       {
-        m_windowService.ShowOverlay (new Rect (WindowLeft, WindowTop, WindowWidth, WindowHeight));
-
-        if (m_currentSettings.SoundEnabled == true)
-          m_soundPlayerService.PlaySound (m_currentSettings.SoundType, m_currentSettings.SoundVolume);
-
         m_loggingService.Log ("Regex hit.");
+
+        await ShowOverlayAsync ();
       }
+    }
+
+    public async Task ShowOverlayAsync ()
+    {
+      IsOverlayVisible = true;
+      IsOkayEnabled = false;
+
+      // Sound abspielen, wenn aktiviert.
+      var currentSettings = m_settingsService.LoadSettings<UserSettings> ();
+      if (currentSettings.SoundEnabled == true)
+        m_soundPlayerService.PlaySound (currentSettings.SoundType, currentSettings.SoundVolume);
+
+      // 1 Sekunde warten, bis der Button aktiviert wird, damit der Benutzer das Overlay nicht ausversehen sofort wieder schließt.
+      await Task.Delay (1000);
+      IsOkayEnabled = true;
     }
 
     private void OnSettings (Window x_window)
     {
-      if (m_windowService.IsSettingsOpen () == true)
-        return;
+      var currentSettings = m_settingsService.LoadSettings<SettingsWindowSettings> ();
+      currentSettings.SettingsWindowTop = WindowTop;
+      currentSettings.SettingsWindowLeft = WindowLeft + WindowWidth;
+      m_settingsService.SaveSettings (currentSettings);
 
-      m_windowService.ShowSettings (x_window);
-
-      m_windowService.SettingWindowClosed += OnSettingsClosed;
+      // Dialog öffnen.
+      var viewModel = m_dialogService.ShowDialog<SettingsViewModel, SettingsDialog> ();
 
       // GUI aktualisieren.
       OnPropertyChanged (nameof (CanSettings));
@@ -237,30 +307,30 @@ namespace POECraftHelper.ViewModels
       OnPropertyChanged (nameof (CanExit));
       OnPropertyChanged (nameof (CanMinimize));
       OnPropertyChanged (nameof (CanDrag));
+    }
+
+    private void OnOkay ()
+    {
+      IsOverlayVisible = false;
     }
 
     private void OnExit ()
     {
-      m_windowService.ShutdownApp ();
+      var windowSettings = new MainWindowSettings ();
+      windowSettings.MainWindowHeight = WindowHeight;
+      windowSettings.MainWindowWidth = WindowWidth;
+      windowSettings.MainWindowLeft = WindowLeft;
+      windowSettings.MainWindowTop = WindowTop;
+
+      m_settingsService.SaveSettings (windowSettings);
+
+      m_applicationService.ShutdownApp ();
     }
 
     private void OnMinimize ()
     {
-      m_windowService.MinimizeApp ();
+      m_applicationService.MinimizeApp ();
     }
-
-    private void OnSettingsClosed (Object sender, EventArgs e)
-    {
-      // GUI aktualisieren.
-      OnPropertyChanged (nameof (CanSettings));
-      OnPropertyChanged (nameof (CanStartStop));
-      OnPropertyChanged (nameof (CanExit));
-      OnPropertyChanged (nameof (CanMinimize));
-      OnPropertyChanged (nameof (CanDrag));
-
-      m_windowService.SettingWindowClosed -= OnSettingsClosed;
-    }
-
 
     public void Dispose ()
     {
