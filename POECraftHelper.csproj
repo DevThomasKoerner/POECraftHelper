@@ -6,10 +6,22 @@
 		<UseWPF>true</UseWPF>
 		<Nullable>disable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ApplicationIcon>Views\Images\PoeCraftHelper.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Views\Images\CalibrationError.png" />
+	  <None Remove="Views\Images\PoeCraftHelper.png" />
+	  <None Remove="Views\Images\Success.png" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<ApplicationDefinition Include="Core\App.xaml" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <Content Include="Views\Images\PoeCraftHelper.ico" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -27,6 +39,13 @@
 		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.142" />
 		<PackageReference Include="NAudio" Version="2.3.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+		<PackageReference Include="Vortice.Direct3D11" Version="3.8.3" />
+		<PackageReference Include="Vortice.DXGI" Version="3.8.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Views\Images\CalibrationError.png" />
+	  <Resource Include="Views\Images\Success.png" />
 	</ItemGroup>
 
 	<ItemGroup>

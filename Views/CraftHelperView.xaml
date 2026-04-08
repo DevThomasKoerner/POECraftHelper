@@ -3,6 +3,7 @@
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
                  xmlns:local="clr-namespace:POECraftHelper.Views"
                  xmlns:controls="clr-namespace:POECraftHelper.Controls"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
@@ -49,6 +50,7 @@
     </Grid.ColumnDefinitions>
 
     <controls:OverlayControl Visibility="{Binding IsOverlayVisible, Converter={StaticResource _booleanToVisibilityConverter}}"
+                             CurrentDetectionResult="{Binding CurrentDetectionResult}"
                              Grid.ColumnSpan="3"
                              OkayCommand="{Binding OkayCommand}"
                              IsOkayEnabled="{Binding IsOkayEnabled}"
@@ -120,29 +122,31 @@
                                   VerticalAlignment="Bottom"
                                   Panel.ZIndex="10"
                                   Margin="2,0,0,10"
-                                  IsDragEnabled="{Binding CanDrag}" />
+                                  IsDragEnabled="{Binding CanDrag}"
+                                  TargetElement="{Binding ElementName=_detectionArea}"
+                                  Bounds="{Binding DetectionArea, Mode=TwoWay}" />
     </StackPanel>
 
-
-
-
     <Grid Grid.Column="1">
-
       <controls:WindowResizeControl HorizontalAlignment="Center"
                                     VerticalAlignment="Bottom"
                                     Panel.ZIndex="10"
                                     IsVertical="True"
-                                    IsResizeEnabled="{Binding CanResize}" />
+                                    IsResizeEnabled="{Binding CanResize}"
+                                    TargetElement="{Binding ElementName=_detectionArea}"
+                                    Bounds="{Binding DetectionArea, Mode=TwoWay}" />
 
       <controls:WindowResizeControl HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     Panel.ZIndex="10"
                                     Margin="-10,-30,0,0"
                                     IsResizeEnabled="{Binding CanResize}"
-                                    IsVertical="False" />
+                                    IsVertical="False"
+                                    TargetElement="{Binding ElementName=_detectionArea}"
+                                    Bounds="{Binding DetectionArea, Mode=TwoWay}" />
 
       <!-- Seiten + unten -->
-      <Border SizeChanged="Border_SizeChanged"
+      <Border x:Name="_detectionArea"
               Margin="22,0,20,30"
               BorderThickness="3,0,3,3"
               Background="Transparent">

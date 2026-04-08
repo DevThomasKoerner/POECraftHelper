@@ -14,6 +14,7 @@
                  Width="300"
                  Height="230"
                  Topmost="True"
+                 Title="Add new regex"
                  WindowStartupLocation="CenterScreen">
 
   <mah:MetroWindow.Resources>

@@ -1,12 +1,13 @@
 ﻿<UserControl x:Class="POECraftHelper.Controls.OverlayControl"
-                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
-                 xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
-                 xmlns:local="clr-namespace:POECraftHelper.Controls"
-                 mc:Ignorable="d">
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             xmlns:local="clr-namespace:POECraftHelper.Controls"
+             xmlns:views="clr-namespace:POECraftHelper.Views"
+             mc:Ignorable="d">
 
   <UserControl.Resources>
     <ResourceDictionary>
@@ -15,6 +16,98 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Amber.xaml" />
       </ResourceDictionary.MergedDictionaries>
+
+      <DataTemplate x:Key="_calibrationRegexDetectedTemplate">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Row="0"
+                 Content="Regex already hit!"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="16"
+                 Margin="10" />
+
+          <Image Grid.Row="1"
+                 Source="/Views/Images/Success.png"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Stretch="Uniform"
+                 Margin="10" />
+        </Grid>
+      </DataTemplate>
+
+      <DataTemplate x:Key="_calibrationBorderErrorTemplate">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                      HorizontalAlignment="Center" 
+                      VerticalAlignment="Center">
+            <iconPacks:PackIconMaterial Kind="Cancel"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Width="15"
+                                        Height="15">
+              <iconPacks:PackIconMaterial.Foreground>
+                <SolidColorBrush Color="Red" />
+              </iconPacks:PackIconMaterial.Foreground>
+            </iconPacks:PackIconMaterial>
+            <Label Content="Calibration Error!"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontSize="16" />
+          </StackPanel>
+         
+          <TextBlock Grid.Row="1"
+                     Text="Crafting Window must be centered within the white frame."
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     FontSize="12"
+                     TextWrapping="Wrap" />
+
+          <Image Grid.Row="2"
+                 Source="/Views/Images/CalibrationError.png"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Stretch="Uniform" />
+        </Grid>
+      </DataTemplate>
+
+
+      <DataTemplate x:Key="_regexDetectionSuccessTemplate">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Row="0"
+                 Content="Regex hit!"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 FontSize="16"
+                 Margin="10" />
+
+          <Image Grid.Row="1"
+                 Source="/Views/Images/Success.png"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Center"
+                 Stretch="Uniform"
+                 Margin="10" />
+        </Grid>
+      </DataTemplate>
+
+      <views:OverlayDataTemplateSelector x:Key="_overlayTemplateSelector"
+                                         CalibrationRegexDetectedTemplate="{StaticResource _calibrationRegexDetectedTemplate}"
+                                         CalibrationBorderErrorTemplate="{StaticResource _calibrationBorderErrorTemplate}"
+                                         RegexDetectionSuccessTemplate="{StaticResource _regexDetectionSuccessTemplate}" />
     </ResourceDictionary>
   </UserControl.Resources>
 
@@ -28,18 +121,14 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <Label Grid.Row="0"
-           Content="Regex hit!"
-           HorizontalAlignment="Center"
-           VerticalAlignment="Center"
-           FontSize="16"
-           Margin="10" />
+    <ContentControl Content="{Binding CurrentDetectionResult}"
+                    ContentTemplateSelector="{StaticResource _overlayTemplateSelector}" />
 
     <Button Grid.Row="1"
             x:Name="_btnOkay"
             Style="{StaticResource MahApps.Styles.Button.Circle}"
             Background="{DynamicResource MahApps.Brushes.ThemeBackground}"
-            Margin="10"
+            Margin="10,5,10,10"
             Content="Okay"
             Height="44"
             Width="44"

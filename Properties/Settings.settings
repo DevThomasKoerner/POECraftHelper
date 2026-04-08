@@ -11,20 +11,14 @@
     <Setting Name="SoundType" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="WindowLeft" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
-    <Setting Name="WindowTop" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100</Value>
-    </Setting>
     <Setting Name="RegexPatternsJson" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SettingsWindowHeight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">300</Value>
+      <Value Profile="(Default)">500</Value>
     </Setting>
     <Setting Name="SettingsWindowWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">300</Value>
+      <Value Profile="(Default)">400</Value>
     </Setting>
     <Setting Name="SettingsWindowLeft" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
@@ -33,16 +27,22 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="MainWindowHeight" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">255</Value>
+      <Value Profile="(Default)">250</Value>
     </Setting>
     <Setting Name="MainWindowWidth" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">245</Value>
+      <Value Profile="(Default)">250</Value>
     </Setting>
     <Setting Name="MainWindowLeft" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">238</Value>
+      <Value Profile="(Default)">100</Value>
     </Setting>
     <Setting Name="MainWindowTop" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">374</Value>
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="IsSoundExpanded" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="IsRegexExpanded" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

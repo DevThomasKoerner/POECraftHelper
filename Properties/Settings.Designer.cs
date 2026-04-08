@@ -61,30 +61,6 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int WindowLeft {
-            get {
-                return ((int)(this["WindowLeft"]));
-            }
-            set {
-                this["WindowLeft"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
-        public int WindowTop {
-            get {
-                return ((int)(this["WindowTop"]));
-            }
-            set {
-                this["WindowTop"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string RegexPatternsJson {
             get {
@@ -97,7 +73,7 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
         public double SettingsWindowHeight {
             get {
                 return ((double)(this["SettingsWindowHeight"]));
@@ -109,7 +85,7 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("300")]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
         public double SettingsWindowWidth {
             get {
                 return ((double)(this["SettingsWindowWidth"]));
@@ -145,7 +121,7 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("255")]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
         public double MainWindowHeight {
             get {
                 return ((double)(this["MainWindowHeight"]));
@@ -157,7 +133,7 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("245")]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
         public double MainWindowWidth {
             get {
                 return ((double)(this["MainWindowWidth"]));
@@ -169,7 +145,7 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("238")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public double MainWindowLeft {
             get {
                 return ((double)(this["MainWindowLeft"]));
@@ -181,13 +157,37 @@ namespace POECraftHelper.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("374")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public double MainWindowTop {
             get {
                 return ((double)(this["MainWindowTop"]));
             }
             set {
                 this["MainWindowTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsSoundExpanded {
+            get {
+                return ((bool)(this["IsSoundExpanded"]));
+            }
+            set {
+                this["IsSoundExpanded"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsRegexExpanded {
+            get {
+                return ((bool)(this["IsRegexExpanded"]));
+            }
+            set {
+                this["IsRegexExpanded"] = value;
             }
         }
     }

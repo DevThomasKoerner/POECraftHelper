@@ -113,7 +113,6 @@ namespace POECraftHelper.ViewModels
     public ObservableCollection<SoundType> AvailableSounds { get; } = new ObservableCollection<SoundType> (Enum.GetValues<SoundType> ());
 
     private SoundType m_selectedSound;
-
     public SoundType SelectedSound
     {
       get => m_selectedSound;
@@ -125,6 +124,28 @@ namespace POECraftHelper.ViewModels
           OnPropertyChanged (nameof (SelectedSound));
           OnSoundChanged (SoundVolume);
         }
+      }
+    }
+
+    private Boolean m_isSoundExpanded;
+    public Boolean IsSoundExpanded
+    {
+      get => m_isSoundExpanded;
+      set
+      {
+        m_isSoundExpanded = value;
+        OnPropertyChanged (nameof (IsSoundExpanded));
+      }
+    }
+
+    private Boolean m_isRegexExpanded;
+    public Boolean IsRegexExpanded
+    {
+      get => m_isRegexExpanded;
+      set
+      {
+        m_isRegexExpanded = value;
+        OnPropertyChanged (nameof (IsRegexExpanded));
       }
     }
 
@@ -173,6 +194,8 @@ namespace POECraftHelper.ViewModels
       m_soundEnabled = currentSettings.SoundEnabled;
       m_soundVolume = currentSettings.SoundVolume;
       m_selectedSound = currentSettings.SoundType;
+      m_isSoundExpanded = currentSettings.IsSoundExpanded;
+      m_isRegexExpanded = currentSettings.IsRegexExpanded;
 
       foreach (var regexPattern in currentSettings.RegexPatterns)
       {
@@ -180,15 +203,11 @@ namespace POECraftHelper.ViewModels
         RegexItems.Add (regexItem);
       }
 
-      // Falls keine Regex-Items vorhanden sind, dann ein Beispiel-Item hinzufügen, damit der Benutzer eine Vorlage hat.
-      if (RegexItems.Any () == false)
-      {
-        RegexItems.Add (new RegexItem ("Body Armour", "\"^(Prime)\\sConquest Lamellar|^Conquest Lamellar\" \"Conquest Lamellar\\s|Conquest Lamellar$\""));
-      }
-
       OnPropertyChanged (nameof (SoundEnabled));
       OnPropertyChanged (nameof (SoundVolume));
       OnPropertyChanged (nameof (SelectedSound));
+      OnPropertyChanged (nameof (IsSoundExpanded));
+      OnPropertyChanged (nameof (IsRegexExpanded));
     }
 
     private void InitializeWindow ()
@@ -260,6 +279,8 @@ namespace POECraftHelper.ViewModels
         craftHelperSettings.SoundVolume = SoundVolume;
         craftHelperSettings.SoundType = SelectedSound;
         craftHelperSettings.RegexPatterns = RegexItems.ToDictionary (item => item.RegexTitle, item => item.RegexPattern);
+        craftHelperSettings.IsSoundExpanded = IsSoundExpanded;
+        craftHelperSettings.IsRegexExpanded = IsRegexExpanded;
         m_settingsService.SaveSettings (craftHelperSettings);
 
         var windowSettings = new SettingsWindowSettings ();

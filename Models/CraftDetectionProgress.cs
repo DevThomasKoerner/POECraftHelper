@@ -8,11 +8,11 @@ namespace POECraftHelper.Models
 {
   public class CraftDetectionProgress
   {
-    public Boolean RegexHit { get; set; }
+    public DetectionResult DetectionResult { get; set; }
 
-    public CraftDetectionProgress (Boolean x_regexHit)
+    public CraftDetectionProgress (DetectionResult x_detectionResult)
     {
-      RegexHit = x_regexHit;
+      DetectionResult = x_detectionResult;
     }
   }
 }

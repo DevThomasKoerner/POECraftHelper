@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using POECraftHelper.Models;
 using POECraftHelper.ViewModels;
 
 namespace POECraftHelper.Controls
@@ -41,6 +42,19 @@ namespace POECraftHelper.Controls
     {
       get => (Boolean)GetValue (IsOkayEnabledProperty);
       set => SetValue (IsOkayEnabledProperty, value);
+    }
+
+    public static readonly DependencyProperty CurrentDetectionResultProperty =
+            DependencyProperty.Register(
+                nameof(CurrentDetectionResult),
+                typeof(DetectionResult),
+                typeof(OverlayControl),
+                new PropertyMetadata(DetectionResult.None));
+
+    public DetectionResult CurrentDetectionResult
+    {
+      get => (DetectionResult)GetValue (CurrentDetectionResultProperty);
+      set => SetValue (CurrentDetectionResultProperty, value);
     }
 
     public OverlayControl ()

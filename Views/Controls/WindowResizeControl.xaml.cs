@@ -1,7 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace POECraftHelper.Controls
 {
@@ -58,6 +60,34 @@ namespace POECraftHelper.Controls
                                                                                                      typeof (Boolean),
                                                                                                      typeof (WindowResizeControl),
                                                                                                      new PropertyMetadata (true));
+
+    public static readonly DependencyProperty TargetElementProperty =
+    DependencyProperty.Register(
+        nameof(TargetElement),
+        typeof(FrameworkElement),
+        typeof(WindowResizeControl),
+        new PropertyMetadata(null));
+
+    public FrameworkElement TargetElement
+    {
+      get => (FrameworkElement)GetValue (TargetElementProperty);
+      set => SetValue (TargetElementProperty, value);
+    }
+
+
+    public static readonly DependencyProperty BoundsProperty =
+    DependencyProperty.Register(
+        nameof(Bounds),
+        typeof(Rectangle),
+        typeof(WindowResizeControl),
+        new FrameworkPropertyMetadata(default(Rectangle),
+            FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+    public Rectangle Bounds
+    {
+      get => (Rectangle)GetValue (BoundsProperty);
+      set => SetValue (BoundsProperty, value);
+    }
 
     public Boolean IsResizeEnabled
     {
@@ -122,6 +152,9 @@ namespace POECraftHelper.Controls
       (sender as UIElement)?.ReleaseMouseCapture ();
       (sender as UIElement).MouseMove -= Ellipse_MouseMove;
       (sender as UIElement).MouseLeftButtonUp -= Ellipse_MouseLeftButtonUp;
+
+      if (TargetElement is Border border)
+        Application.Current.Dispatcher.InvokeAsync (UpdateTargetBounds, System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
     private void Ellipse_MouseEnter (object sender, MouseEventArgs e)
@@ -138,6 +171,31 @@ namespace POECraftHelper.Controls
         return;
 
       Mouse.OverrideCursor = null;
+    }
+
+    private void UpdateTargetBounds ()
+    {
+      if (TargetElement is not Border border)
+        return;
+
+      var window = Window.GetWindow (border);
+      if (window == null)
+        return;
+
+      var thickness = border.BorderThickness;
+
+      // Position relativ zum Window
+      var topLeftRelative = border.TranslatePoint (new System.Windows.Point (0, 0), window);
+
+      var dpi = VisualTreeHelper.GetDpi (window);
+
+      var rect = new Rectangle ((int)((window.Left + topLeftRelative.X + thickness.Left + 1) * dpi.DpiScaleX),
+                                (int)((window.Top + topLeftRelative.Y + thickness.Top) * dpi.DpiScaleY),
+                                (int)(Math.Max(0, (border.ActualWidth - thickness.Left - thickness.Right) * dpi.DpiScaleX)),
+                                (int)(Math.Max(0, (border.ActualHeight - thickness.Top - thickness.Bottom) * dpi.DpiScaleY)));
+
+      if (Bounds != rect)
+        Bounds = rect;
     }
   }
 }

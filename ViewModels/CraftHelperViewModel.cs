@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,8 +28,6 @@ namespace POECraftHelper.ViewModels
     private readonly ISettingsService m_settingsService;
 
     private readonly IApplicationService m_applicationService;
-
-    //private readonly IOverlayService m_overlayService;
 
     #endregion
 
@@ -68,6 +67,21 @@ namespace POECraftHelper.ViewModels
         OnPropertyChanged (nameof (IsOverlayVisible));
       }
     }
+
+    private DetectionResult m_currentDetectionResult = DetectionResult.None;
+    public DetectionResult CurrentDetectionResult
+    {
+      get => m_currentDetectionResult;
+      set
+      {
+        if (m_currentDetectionResult != value)
+        {
+          m_currentDetectionResult = value;
+          OnPropertyChanged (nameof (CurrentDetectionResult));
+        }
+      }
+    }
+
 
     private String m_startStopText;
 
@@ -136,6 +150,18 @@ namespace POECraftHelper.ViewModels
       }
     }
 
+    private Rectangle m_detectionArea;
+
+    public Rectangle DetectionArea
+    {
+      get => m_detectionArea;
+      set
+      {
+        m_detectionArea = value;
+        OnPropertyChanged (nameof (DetectionArea));
+      }
+    }
+
     #endregion
 
     #region Commands
@@ -164,15 +190,6 @@ namespace POECraftHelper.ViewModels
 
     #endregion
 
-    public Rectangle InnerBorderRect { get; private set; }
-
-    public void SetInnerBorderRect (Rectangle rect)
-    {
-      InnerBorderRect = rect;
-      // Optional: PropertyChanged, wenn du es gebunden hast
-      OnPropertyChanged (nameof (InnerBorderRect));
-    }
-
     public CraftHelperViewModel (IRegexDetectionService x_regexDetectionService, 
                                  IDialogService x_dialogService, 
                                  ILoggingService x_loggingService,
@@ -198,13 +215,13 @@ namespace POECraftHelper.ViewModels
 
     private void Initilize ()
     {
-      IsOverlayVisible = false;
-
       var windowSettings = m_settingsService.LoadSettings<MainWindowSettings> ();
       WindowTop = windowSettings.MainWindowTop;
       WindowLeft = windowSettings.MainWindowLeft;
       WindowHeight = windowSettings.MainWindowHeight;
       WindowWidth = windowSettings.MainWindowWidth;
+
+      m_loggingService.Log ("Startup of POE CraftHelper");
     }
 
     private async void OnStartStop ()
@@ -225,11 +242,8 @@ namespace POECraftHelper.ViewModels
         // Progress-Reporter erstellen.
         var craftDetectionProgress = new Progress<CraftDetectionProgress> (OnProgressChanged);
 
-        // Detektionsbereich ermitteln.
-        var detectionArea = GetDetectionArea ();
-
         // Detektionsprozess starten.
-        await Task.Run (() => StartDetectionAsync (m_cancellationTokenSource.Token, craftDetectionProgress, detectionArea));
+        await Task.Run (() => StartDetectionAsync (m_cancellationTokenSource.Token, craftDetectionProgress, DetectionArea));
       }
       catch (OperationCanceledException)
       {
@@ -250,44 +264,67 @@ namespace POECraftHelper.ViewModels
     private async Task StartDetectionAsync (CancellationToken cancellationToken, IProgress<CraftDetectionProgress> x_progressReporter, Rectangle x_detectionArea)
     {
       var detectionArea = x_detectionArea;
-      await Task.Delay (1000);
+
+      // 1. Initialisierung durchführen und Zeit messen
+      var sw = Stopwatch.StartNew();
+      m_regexDetectionService.InitializeRun (detectionArea);
+      sw.Stop ();
+      var initMs = sw.Elapsed.TotalMilliseconds;
+      m_loggingService.Log ($"[DirectX] Initialization completed in {sw.Elapsed.TotalMilliseconds:F2} ms.");
+
+      // 2. Kalibrierung durchführen und messen
+      sw.Restart (); // Setzt die Uhr auf 0 und startet sie neu
+      var detectionResult = m_regexDetectionService.Calibrate (detectionArea);
+      sw.Stop ();
+      var calibMs = sw.Elapsed.TotalMilliseconds;
+      m_loggingService.Log ($"[EmguCV] Calibration completed in {sw.Elapsed.TotalMilliseconds:F2} ms. Result: {detectionResult}");
+
+      // Kalibrierung überprüfen.
+      if (detectionResult != DetectionResult.CalibrationSuccess)
+      {
+        // Kalibrierung fehlgeschlagen, Fehler-Overlay anzeigen.
+        x_progressReporter.Report (new CraftDetectionProgress (detectionResult));
+        return;
+      }
+
+      // Detektion starten.
       while (cancellationToken.IsCancellationRequested == false)
       {
-        if (m_regexDetectionService.Detect (detectionArea) == true)
+        if (m_regexDetectionService.Detect (detectionArea) == DetectionResult.RegexDetectionSuccess)
         {
-          x_progressReporter.Report (new CraftDetectionProgress (true));
+          x_progressReporter.Report (new CraftDetectionProgress (DetectionResult.RegexDetectionSuccess));
           break;
         }
-      }
-    }
 
-    private Rectangle GetDetectionArea ()
-    {
-      return InnerBorderRect;
+        await Task.Delay (16, cancellationToken);
+      }
     }
 
     private async void OnProgressChanged (CraftDetectionProgress x_progress)
     {
-      if (x_progress.RegexHit == true)
-      {
-        m_loggingService.Log ("Regex hit.");
-
-        await ShowOverlayAsync ();
-      }
+      await ShowOverlayAsync (x_progress.DetectionResult);
     }
 
-    public async Task ShowOverlayAsync ()
+    public async Task ShowOverlayAsync (DetectionResult x_detectionResult)
     {
       IsOverlayVisible = true;
+      CurrentDetectionResult = x_detectionResult;
       IsOkayEnabled = false;
 
-      // Sound abspielen, wenn aktiviert.
-      var currentSettings = m_settingsService.LoadSettings<UserSettings> ();
-      if (currentSettings.SoundEnabled == true)
-        m_soundPlayerService.PlaySound (currentSettings.SoundType, currentSettings.SoundVolume);
+      await Task.Delay (100);
 
-      // 1 Sekunde warten, bis der Button aktiviert wird, damit der Benutzer das Overlay nicht ausversehen sofort wieder schließt.
-      await Task.Delay (1000);
+      // Sound abspielen, wenn aktiviert.
+      if (CurrentDetectionResult == DetectionResult.RegexDetectionSuccess)
+      {
+        var currentSettings = m_settingsService.LoadSettings<UserSettings> ();
+        if (currentSettings.SoundEnabled == true)
+          m_soundPlayerService.PlaySound (currentSettings.SoundType, currentSettings.SoundVolume);
+
+        // 700ms warten, bis der Button aktiviert wird, damit der Benutzer das Overlay nicht ausversehen sofort wieder schließt.
+        await Task.Delay (700);
+        IsOkayEnabled = true;
+      }
+
       IsOkayEnabled = true;
     }
 
@@ -340,6 +377,56 @@ namespace POECraftHelper.ViewModels
         m_cancellationTokenSource.Dispose ();
         m_cancellationTokenSource = null;
       }
+
+      m_loggingService.Log ("Shutdown of POE CraftHelper");
     }
+
+    //private void DoDeveloperStressTest (Rectangle x_detectionArea)
+    //{
+    //  m_regexDetectionService.InitializeRun (x_detectionArea);
+
+    //  bool success = true;
+    //  int iterations = 300;
+    //  double totalElapsedMs = 0;
+    //  int validCaptures = 0; // Zähler für tatsächliche Messungen
+
+    //  for (int i = 0; i < iterations; i++)
+    //  {
+    //    var iterationStopwatch = Stopwatch.StartNew();
+
+    //    var result = m_regexDetectionService.StressTest(x_detectionArea);
+
+    //    iterationStopwatch.Stop ();
+
+    //    // Wir addieren die Zeit IMMER, damit wir sehen, wie lange die CPU arbeitet
+    //    totalElapsedMs += iterationStopwatch.Elapsed.TotalMilliseconds;
+
+    //    if (result == DetectionResult.None)
+    //    {
+    //      // Bei einem Timeout kurz warten, damit die CPU nicht 100% Last erzeugt
+    //      Thread.Sleep (1);
+    //      continue;
+    //    }
+
+    //    // Wenn wir hier sind, hatten wir eine erfolgreiche Erkennung (oder einen echten Fehler)
+    //    validCaptures++;
+
+    //    if (result != DetectionResult.CalibrationRegexDetected)
+    //    {
+    //      success = false;
+    //      m_loggingService.Log ($"Stress test failed at iteration {i + 1} with result: {result}");
+    //      break;
+    //    }
+    //  }
+
+    //  // Durchschnitt berechnen (entweder auf alle Iterationen oder nur auf validCaptures)
+    //  double averageMs = iterations > 0 ? totalElapsedMs / iterations : 0;
+
+    //  m_loggingService.Log ($"Stress test completed: Success={success}, " +
+    //                $"Total time={totalElapsedMs:F2} ms, " +
+    //                $"Average per iteration={averageMs:F2} ms, " +
+    //                $"Valid detections={validCaptures}/{iterations}");
+    //}
+
   }
 }

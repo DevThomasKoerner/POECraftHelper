@@ -15,7 +15,8 @@ namespace POECraftHelper.Core
       var services = new ServiceCollection ();
 
       // Services
-      services.AddSingleton<IScreenshotCaptureService, ScreenshotCaptureService> ();
+      services.AddSingleton<IScreenshotCaptureService, ScreenshotCaptureDirectXService> ();
+      //services.AddSingleton<IScreenshotCaptureService, ScreenshotCaptureService> ();
       services.AddSingleton<IRegexDetectionService, RegexDetectionService> ();
       services.AddSingleton<ILoggingService, LoggingService> ();
       services.AddSingleton<IApplicationService, ApplicationService> ();
