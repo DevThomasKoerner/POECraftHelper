@@ -53,7 +53,8 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="10" />
           <RowDefinition Height="Auto" />
-
+          <RowDefinition Height="10" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Expander Header="Sound"
@@ -144,7 +145,7 @@
                   Grid.Row="2"
                   IsExpanded="{Binding IsRegexExpanded, Mode=TwoWay}"
                   Margin="10">
-          <StackPanel >
+          <StackPanel>
             <!-- Liste der Regex -->
             <ItemsControl ItemsSource="{Binding RegexItems}"
                           Margin="20,0,20,0">
@@ -251,6 +252,16 @@
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center" />
             </Button>
+          </StackPanel>
+        </Expander>
+
+        <Expander Header="Update"
+                  Grid.Row="4"
+                  Margin="10"
+                  IsExpanded="False">
+          <StackPanel Margin="20,0,20,0" Orientation="Horizontal" >
+            <TextBlock Text="App version: " />
+            <TextBlock Text="{Binding CurrentAppVersion}" />
           </StackPanel>
         </Expander>
       </Grid>

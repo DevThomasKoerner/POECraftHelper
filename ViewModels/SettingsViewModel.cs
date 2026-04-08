@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using POECraftHelper.Core;
@@ -149,6 +150,17 @@ namespace POECraftHelper.ViewModels
       }
     }
 
+    private String m_currentAppVersion;
+    public String CurrentAppVersion
+    {
+      get => m_currentAppVersion;
+      set
+      {
+        m_currentAppVersion = value;
+        OnPropertyChanged (nameof (CurrentAppVersion));
+      }
+    }
+
     public ObservableCollection<RegexItem> RegexItems { get; } = new ObservableCollection<RegexItem> ();
 
     #endregion
@@ -202,6 +214,8 @@ namespace POECraftHelper.ViewModels
         var regexItem = new RegexItem (regexPattern.Key, regexPattern.Value);
         RegexItems.Add (regexItem);
       }
+
+      CurrentAppVersion = Assembly.GetExecutingAssembly ().GetName ().Version?.ToString () ?? "unknown";
 
       OnPropertyChanged (nameof (SoundEnabled));
       OnPropertyChanged (nameof (SoundVolume));
