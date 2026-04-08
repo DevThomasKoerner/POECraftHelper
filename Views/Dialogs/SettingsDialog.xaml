@@ -48,8 +48,10 @@
     </Grid.RowDefinitions>
 
     <ScrollViewer Grid.Row="0">
-      <Grid>
+      <Grid Margin="0,0,5,0">
         <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="10" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="10" />
           <RowDefinition Height="Auto" />
@@ -262,6 +264,33 @@
           <StackPanel Margin="20,0,20,0" Orientation="Horizontal" >
             <TextBlock Text="App version: " />
             <TextBlock Text="{Binding CurrentAppVersion}" />
+          </StackPanel>
+        </Expander>
+
+        <Expander Grid.Row="6"
+                  Margin="10"
+                  IsExpanded="False">
+          <Expander.Header>
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+              <TextBlock Text="❤️"
+                         Foreground="Red"
+                         FontSize="16"
+                         Margin="0,0,5,0" />
+              <TextBlock Text="Support"
+                         FontSize="14"
+                         VerticalAlignment="Center" />
+            </StackPanel>
+          </Expander.Header>
+          <StackPanel Margin="20,0,20,0"
+                      HorizontalAlignment="Left">
+            <TextBlock Text="If you like the app, you can support it!"
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"
+                       Margin="0,0,0,10" />
+            <Button Content="Buy me a coffee"
+                    HorizontalAlignment="Left"
+                    Width="150"/>
           </StackPanel>
         </Expander>
       </Grid>

@@ -154,7 +154,7 @@
           <Style TargetType="Border">
             <!-- Default -->
             <Setter Property="BorderBrush"
-                    Value="LightGray" />
+                    Value="#6495ED" />
             <Style.Triggers>
               <DataTrigger Binding="{Binding IsRunning}"
                            Value="True">
