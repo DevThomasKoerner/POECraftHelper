@@ -1,5 +1,6 @@
-### General
+<img width="64" height="64" alt="Success" src="https://github.com/user-attachments/assets/b49c37f9-0d54-4b72-9065-626698d07bd9" />
 
+### General
 POE CraftHelper is a Path of Exile overlay tool that assists you in crafting your desired items.
 
 It displays an overlay above the item as soon as your regex is matched - allowing you to spam crafting currencies until the desired modifiers appear.
@@ -10,6 +11,7 @@ The app works entirely through image processing and does not automate or interac
 [⬇️ POECraftHelper_Setup_v1.2.0.0.exe](https://github.com/DevThomasKoerner/POECraftHelper/releases/download/v1.2.0.0/POECraftHelper_Setup_v1.2.0.0.exe)
 
 ### **How It Works:**
+
 
 1.  Adjust the position and size of the app so that the in-game crafting window 
    is centered inside the blue frame. 
