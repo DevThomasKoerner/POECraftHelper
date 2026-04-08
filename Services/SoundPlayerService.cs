@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Media;
 using System.Reflection;
@@ -20,13 +21,13 @@ namespace POECraftHelper.Services
   {
     public void PlaySound (SoundType x_soundType, Double x_volume)
     {
-      var assemblyDirectory = System.IO.Path.GetDirectoryName (Assembly.GetExecutingAssembly ().Location);
+      var assemblyDirectory = AppContext.BaseDirectory;
 
       String filePath = x_soundType switch
       {
-        SoundType.Divine => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Divine.wav"),
-        SoundType.Chaos  => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Chaos.wav"),
-        SoundType.Exalt  => System.IO.Path.Combine (assemblyDirectory, "Sounds", "Exalt.wav"),
+        SoundType.Divine => Path.Combine (assemblyDirectory, "Sounds", "Divine.wav"),
+        SoundType.Chaos  => Path.Combine (assemblyDirectory, "Sounds", "Chaos.wav"),
+        SoundType.Exalt  => Path.Combine (assemblyDirectory, "Sounds", "Exalt.wav"),
         _ => throw new ArgumentException($"Sound type {x_soundType} is not supported.")
       };
 
