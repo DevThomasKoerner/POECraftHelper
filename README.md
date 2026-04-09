@@ -20,13 +20,13 @@ The app works entirely through image processing and does not automate or interac
 2. Enter your regex in game.
 <img width="568" height="131" alt="Awakened_PoE_Trade_aoCFyhtqsa" src="https://github.com/user-attachments/assets/be466916-dd88-40b9-b9a4-13850a818461" />
 
-4. Press Start. The regex detection algorithm will begin running.
+3. Press Start. The regex detection algorithm will begin running.
 <img width="357" height="350" alt="PathOfExile_jmkBSTYLBe" src="https://github.com/user-attachments/assets/044defae-7cc9-4765-bb5a-c0079034e0db" />
 
 
-5. Craft your item.
+4. Craft your item.
 <img width="372" height="460" alt="Awakened_PoE_Trade_MwfJWuU9lh" src="https://github.com/user-attachments/assets/d6bfbd1e-86a7-4a62-891c-296035445596" />
 
 
-6. Once the regex is matched, an overlay will immediately appear and block all mouse clicks - allowing you to safely spam currencies (e.g. Alterations) without accidentally crafting past your desired result.
+5. Once the regex is matched, an overlay will immediately appear and block all mouse clicks - allowing you to safely spam currencies (e.g. Alterations) without accidentally crafting past your desired result.
 <img width="360" height="341" alt="PathOfExile_AVP5Ytv0PW" src="https://github.com/user-attachments/assets/03937127-a7e2-4b6d-aa34-462c84bdbed3" />
