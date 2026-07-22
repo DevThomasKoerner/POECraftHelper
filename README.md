@@ -8,7 +8,7 @@ The app works entirely through image processing and does not automate or interac
 <img width="64" height="64" alt="Success" src="https://github.com/user-attachments/assets/b49c37f9-0d54-4b72-9065-626698d07bd9" />
 
 ### Download latest version
-[⬇️ POECraftHelper_Setup_v1.2.0.0.exe](https://github.com/DevThomasKoerner/POECraftHelper/releases/download/v1.2.0.0/POECraftHelper_Setup_v1.2.0.0.exe)
+[⬇️ POECraftHelper_Setup_v1.3.0.0.exe](https://github.com/DevThomasKoerner/POECraftHelper/releases/download/v1.3.0.0/POECraftHelper_Setup_v1.3.0.0.exe)
 
 ### **How It Works:**
 
