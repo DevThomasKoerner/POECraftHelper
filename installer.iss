@@ -1,10 +1,10 @@
 [Setup]
 AppName=POECraftHelper
-AppVersion=1.2.0.0
+AppVersion=1.3.0.0
 DefaultDirName={autopf}\POECraftHelper
 DefaultGroupName=POECraftHelper
 OutputDir=.\installer_output
-OutputBaseFilename=POECraftHelper_Setup_v1.2.0.0
+OutputBaseFilename=POECraftHelper_Setup_v1.3.0.0
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

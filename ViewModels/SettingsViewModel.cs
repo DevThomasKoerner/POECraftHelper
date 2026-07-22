@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
@@ -6,6 +7,7 @@ using POECraftHelper.Core;
 using POECraftHelper.Dialogs;
 using POECraftHelper.Models;
 using POECraftHelper.Services;
+using SharpGen.Runtime;
 
 namespace POECraftHelper.ViewModels
 {
@@ -14,12 +16,10 @@ namespace POECraftHelper.ViewModels
     #region Services
 
     private readonly ISoundPlayerService m_soundPlayerService;
-
     private readonly ILoggingService m_loggingService;
-
     private readonly ISettingsService m_settingsService;
-
     private readonly IDialogService m_dialogService;
+    private readonly IUpdateService m_updateService;
 
     #endregion
 
@@ -158,6 +158,19 @@ namespace POECraftHelper.ViewModels
       {
         m_currentAppVersion = value;
         OnPropertyChanged (nameof (CurrentAppVersion));
+        OnPropertyChanged (nameof (CanDownload));
+      }
+    }
+
+    private String m_latestReleaseVersion;
+    public String LatestReleaseVersion
+    {
+      get => m_latestReleaseVersion;
+      set
+      {
+        m_latestReleaseVersion = value;
+        OnPropertyChanged (nameof (LatestReleaseVersion));
+        OnPropertyChanged (nameof (CanDownload));
       }
     }
 
@@ -171,6 +184,8 @@ namespace POECraftHelper.ViewModels
 
     public Boolean CanSelectSound => (SoundEnabled == true);
 
+    public Boolean CanDownload => (LatestReleaseVersion != "unknown" && LatestReleaseVersion != CurrentAppVersion);
+
     #endregion
 
     #region Commands
@@ -179,27 +194,38 @@ namespace POECraftHelper.ViewModels
     public ICommand AddRegexCommand { get; }
     public ICommand RemoveRegexCommand { get; }
     public ICommand CopyRegexCommand { get; }
+    public ICommand DownloadCommand { get; }
+
+    public ICommand OpenSupportLinkCommand { get; }
+
     #endregion
 
 
-    public SettingsViewModel (ISoundPlayerService x_soundPlayerService, ILoggingService x_loggingService, ISettingsService x_settingsService, IDialogService x_dialogService)
+    public SettingsViewModel (ISoundPlayerService x_soundPlayerService, 
+                              ILoggingService x_loggingService, 
+                              ISettingsService x_settingsService, 
+                              IDialogService x_dialogService,
+                              IUpdateService x_updateService)
     {
       m_soundPlayerService = x_soundPlayerService ?? throw new ArgumentNullException (nameof (x_soundPlayerService));
       m_loggingService = x_loggingService ?? throw new ArgumentNullException (nameof (x_loggingService));
       m_settingsService = x_settingsService ?? throw new ArgumentNullException (nameof (x_settingsService));
       m_dialogService = x_dialogService ?? throw new ArgumentNullException (nameof (x_dialogService));
+      m_updateService = x_updateService ?? throw new ArgumentNullException (nameof (x_updateService));
 
       SaveCommand = new RelayCommand (OnSave);
       SliderChangedCommand = new RelayCommand<Double> (OnSoundChanged);
       AddRegexCommand = new RelayCommand (OnAddRegex);
       RemoveRegexCommand = new RelayCommand<RegexItem> (OnRemoveRegex);
       CopyRegexCommand = new RelayCommand<RegexItem> (OnCopyRegex);
+      DownloadCommand = new RelayCommand (OnDownload);
+      OpenSupportLinkCommand = new RelayCommand (OnOpenSupportLink);
 
       InitializeSettings ();
       InitializeWindow ();
     }
 
-    private void InitializeSettings ()
+    private async void InitializeSettings ()
     {
       var currentSettings = m_settingsService.LoadSettings<UserSettings> ();
 
@@ -215,7 +241,9 @@ namespace POECraftHelper.ViewModels
         RegexItems.Add (regexItem);
       }
 
-      CurrentAppVersion = Assembly.GetExecutingAssembly ().GetName ().Version?.ToString () ?? "unknown";
+      var updateResult = await m_updateService.CheckForUpdateAsync ();
+      CurrentAppVersion = m_updateService.GetCurrentVersion ();
+      LatestReleaseVersion = updateResult?.LatestVersion ?? "unknown";
 
       OnPropertyChanged (nameof (SoundEnabled));
       OnPropertyChanged (nameof (SoundVolume));
@@ -282,6 +310,21 @@ namespace POECraftHelper.ViewModels
       await Task.Delay (1500);
 
       x_itemToCopy.IsCopiedToClipboard = false;
+    }
+
+    private void OnDownload ()
+    {
+      m_updateService.DownloadInstaller ();
+    }
+
+    private void OnOpenSupportLink ()
+    {
+      // Öffnet den Download-Link im Standardbrowser
+      Process.Start (new ProcessStartInfo
+      {
+        FileName = "https://ko-fi.com/thomas44793",
+        UseShellExecute = true
+      });
     }
 
     private void OnSave ()

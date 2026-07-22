@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,12 @@ namespace POECraftHelper.Core
       services.AddSingleton<ISoundPlayerService, SoundPlayerService> ();
       services.AddSingleton<ISettingsService, SettingsService> ();
       services.AddSingleton<IDialogService, DialogService> ();
+      services.AddSingleton<IUpdateService, UpdateService> ();
+      services.AddHttpClient<IUpdateService, UpdateService> (client =>
+      {
+        client.DefaultRequestHeaders.UserAgent.ParseAdd ("POECraftHelper/1.0");
+        client.Timeout = TimeSpan.FromSeconds (10);
+      });
 
       // Hauptansicht
       services.AddSingleton<ViewModels.CraftHelperViewModel> ();

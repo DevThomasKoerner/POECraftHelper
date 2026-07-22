@@ -261,10 +261,46 @@
                   Grid.Row="4"
                   Margin="10"
                   IsExpanded="False">
-          <StackPanel Margin="20,0,20,0" Orientation="Horizontal" >
-            <TextBlock Text="App version: " />
-            <TextBlock Text="{Binding CurrentAppVersion}" />
-          </StackPanel>
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="*" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="20,2,20,0"
+                        Grid.Row="0"
+                        Orientation="Horizontal">
+              <TextBlock Text="App version: " />
+              <TextBlock Text="{Binding CurrentAppVersion}" />
+            </StackPanel>
+            <StackPanel Margin="20,2,20,0"
+                        Grid.Row="1"
+                        Orientation="Horizontal">
+              <TextBlock Text="Latest version: " />
+              <TextBlock Text="{Binding LatestReleaseVersion}" />
+            </StackPanel>
+            <StackPanel Margin="20,2,20,0"
+                        Grid.Row="2"
+                        Orientation="Horizontal">
+              <Button Content="New version available"
+                      Command="{Binding DownloadCommand}"
+                      Visibility="{Binding CanDownload, Converter={StaticResource _boolToVisibilityConverter}}" />
+
+              <StackPanel Orientation="Horizontal"
+                          Visibility="{Binding CanDownload, Converter={StaticResource _boolToVisibilityConverter}, ConverterParameter=invert}">
+
+                <TextBlock Text="✓"
+                           Foreground="Green"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Margin="0,0,5,0" />
+
+                <Label Content="You are running the latest version" />
+
+              </StackPanel>
+            </StackPanel>
+          </Grid>
         </Expander>
 
         <Expander Grid.Row="6"
@@ -277,20 +313,25 @@
                          Foreground="Red"
                          FontSize="16"
                          Margin="0,0,5,0" />
-              <TextBlock Text="Support"
+              <TextBlock Text="Love using this App?"
                          FontSize="14"
                          VerticalAlignment="Center" />
             </StackPanel>
           </Expander.Header>
           <StackPanel Margin="20,0,20,0"
                       HorizontalAlignment="Left">
-            <TextBlock Text="If you like the app, you can support it!"
+            <TextBlock Text="POECraftHelper is free to use and built in my spare time."
                        TextWrapping="Wrap"
                        HorizontalAlignment="Left"
                        Margin="0,0,0,10" />
-            <Button Content="Buy me a coffee"
+            <TextBlock Text="Your support helps me keep developing new features, fixing bugs, and improving the app."
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Left"
+                       Margin="0,0,0,10" />
+            <Button Content="Support the Project"
+                    Command="{Binding OpenSupportLinkCommand}"
                     HorizontalAlignment="Left"
-                    Width="150"/>
+                    Width="130"/>
           </StackPanel>
         </Expander>
       </Grid>
